@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg width="800px" height="800px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <rect x="2" y="7.8" width="20" height="2.8" fill="#fff"/>
+ <path d="M2 7C2 5.89543 2.89543 5 4 5H20C21.1046 5 22 5.89543 22 7V7.8H2V7Z" fill="#EB5387"/>
+ <rect x="2" y="10.6" width="20" height="2.8" fill="#A02EC1"/>
+ <rect x="2" y="13.4" width="20" height="2.8"/>
+ <path d="m2 16.2h20v0.8c0 1.1046-0.8954 2-2 2h-16c-1.1046 0-2-0.8954-2-2v-0.8z" fill="#3440B7"/>
+</svg>
