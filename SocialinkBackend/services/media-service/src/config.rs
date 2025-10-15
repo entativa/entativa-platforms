@@ -17,9 +17,15 @@ pub struct Config {
 pub struct ServerConfig {
     pub host: String,
     pub port: u16,
+    #[serde(default = "default_grpc_port")]
+    pub grpc_port: u16,
     pub workers: usize,
     pub max_connections: usize,
     pub request_timeout_secs: u64,
+}
+
+fn default_grpc_port() -> u16 {
+    50051
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -183,6 +189,7 @@ impl Default for Config {
             server: ServerConfig {
                 host: "0.0.0.0".to_string(),
                 port: 8083,
+                grpc_port: 50051,
                 workers: num_cpus::get(),
                 max_connections: 25000,
                 request_timeout_secs: 300,

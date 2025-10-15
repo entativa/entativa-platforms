@@ -1,4 +1,5 @@
 mod config;
+mod grpc_server;
 mod handlers;
 mod metrics;
 mod models;
@@ -110,6 +111,28 @@ async fn main() -> std::io::Result<()> {
         db: db_pool,
         redis: redis_client,
         storage,
+    });
+
+    // Start gRPC server in background
+    let grpc_bind_addr = format!("{}:{}", config.server.host, config.server.grpc_port);
+    let grpc_service = grpc_server::MediaServiceImpl::new(
+        db_pool.clone(),
+        redis_client.clone(),
+        storage.clone(),
+        config.clone(),
+    ).into_service();
+    
+    info!("Starting gRPC server on {}", grpc_bind_addr);
+    
+    let grpc_addr = grpc_bind_addr.parse()
+        .expect("Invalid gRPC bind address");
+    
+    tokio::spawn(async move {
+        tonic::transport::Server::builder()
+            .add_service(grpc_service)
+            .serve(grpc_addr)
+            .await
+            .expect("gRPC server failed");
     });
 
     let bind_addr = format!("{}:{}", config.server.host, config.server.port);
