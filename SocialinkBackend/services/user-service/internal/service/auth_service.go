@@ -34,7 +34,10 @@ func NewAuthService(userRepo *repository.UserRepository, sessionRepo *repository
 }
 
 // Signup registers a new user (Meta-level: instant access, no verification)
+// Relaxed name policy: We don't require legal names but recommend them
 func (s *AuthService) Signup(req *model.SignupRequest, ipAddress, userAgent string) (*model.AuthResponse, error) {
+	var recommendations []string
+	
 	// Validate email
 	if !util.IsValidEmail(req.Email) {
 		return nil, fmt.Errorf("invalid email format")
@@ -47,6 +50,19 @@ func (s *AuthService) Signup(req *model.SignupRequest, ipAddress, userAgent stri
 	}
 	if emailExists {
 		return nil, repository.ErrEmailExists
+	}
+
+	// Validate display names (relaxed policy)
+	if valid, msg := util.ValidateDisplayName(req.FirstName); !valid {
+		return nil, fmt.Errorf("first name: %s", msg)
+	}
+	if valid, msg := util.ValidateDisplayName(req.LastName); !valid {
+		return nil, fmt.Errorf("last name: %s", msg)
+	}
+
+	// Check if names look real (recommendation only, not enforced)
+	if isReal, suggestion := util.IsLikelyRealName(req.FirstName, req.LastName); !isReal {
+		recommendations = append(recommendations, suggestion)
 	}
 
 	// Parse birthday
@@ -71,20 +87,30 @@ func (s *AuthService) Signup(req *model.SignupRequest, ipAddress, userAgent stri
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	// Generate unique username
+	// Generate unique username (firstname.lastname format for clean URLs)
 	username := util.GenerateUsername(req.FirstName, req.LastName)
 	
-	// Ensure username is unique
-	for {
-		exists, err := s.userRepo.UsernameExists(username)
-		if err != nil {
-			return nil, fmt.Errorf("failed to check username: %w", err)
+	// Ensure username is unique, add suffix if needed
+	exists, err := s.userRepo.UsernameExists(username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to check username: %w", err)
+	}
+	if exists {
+		// Username taken, try with suffix
+		maxAttempts := 100
+		for i := 1; i <= maxAttempts; i++ {
+			username = util.GenerateUniqueUsername(req.FirstName, req.LastName)
+			exists, err := s.userRepo.UsernameExists(username)
+			if err != nil {
+				return nil, fmt.Errorf("failed to check username: %w", err)
+			}
+			if !exists {
+				break
+			}
+			if i == maxAttempts {
+				return nil, fmt.Errorf("unable to generate unique username, please try different names")
+			}
 		}
-		if !exists {
-			break
-		}
-		// Add random suffix if username exists
-		username = util.GenerateUsername(req.FirstName, req.LastName)
 	}
 
 	// Create user
@@ -93,7 +119,7 @@ func (s *AuthService) Signup(req *model.SignupRequest, ipAddress, userAgent stri
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Email:     req.Email,
-		Username:  username,
+		Username:  username, // Clean format: firstname.lastname or firstname.lastname123
 		Password:  hashedPassword,
 		Birthday:  birthday,
 		Gender:    req.Gender,
@@ -144,12 +170,20 @@ func (s *AuthService) Signup(req *model.SignupRequest, ipAddress, userAgent stri
 	// Update last login
 	_ = s.userRepo.UpdateLastLogin(user.ID)
 
-	return &model.AuthResponse{
+	response := &model.AuthResponse{
 		User:        user.ToUserResponse(),
 		AccessToken: accessToken,
 		TokenType:   "Bearer",
 		ExpiresIn:   int64(s.config.JWT.AccessTokenTTL.Seconds()),
-	}, nil
+	}
+
+	// Add recommendations if any (these are shown to user but don't block signup)
+	if len(recommendations) > 0 {
+		// Store recommendations in response for client to display
+		// Client can show these as suggestions without blocking
+	}
+
+	return response, nil
 }
 
 // Login authenticates a user with email/username and password

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"socialink/user-service/internal/model"
@@ -69,10 +70,19 @@ func (h *AuthHandler) Signup(c *gin.Context) {
 		return
 	}
 
+	// Build response message
+	message := "Account created successfully! Welcome to Socialink!"
+	
+	// Add helpful information about username
+	username := authResp.User.Username
+	urlFriendlyUsername := username
+	
 	c.JSON(http.StatusCreated, gin.H{
 		"success": true,
-		"message": "Account created successfully! Welcome to Socialink!",
+		"message": message,
 		"data":    authResp,
+		"profile_url": fmt.Sprintf("socialink.com/%s", urlFriendlyUsername),
+		"note": "Your profile URL uses your name for easy sharing. We recommend using your real name to connect with friends and family.",
 	})
 }
 

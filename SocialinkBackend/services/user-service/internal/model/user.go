@@ -37,6 +37,12 @@ type SignupRequest struct {
 	Gender    string `json:"gender" binding:"required,oneof=male female other prefer_not_to_say"`
 }
 
+// SignupResponse includes helpful recommendations
+type SignupResponse struct {
+	*AuthResponse
+	Recommendations []string `json:"recommendations,omitempty"` // Optional suggestions
+}
+
 // LoginRequest represents the request body for user login
 type LoginRequest struct {
 	EmailOrUsername string `json:"email_or_username" binding:"required"`
