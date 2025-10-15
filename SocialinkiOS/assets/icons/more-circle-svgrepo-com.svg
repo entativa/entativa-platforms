@@ -1,1 +1,7 @@
-Scour processed file "SocialinkiOS/assets/icons/more-circle-svgrepo-com.svg" in 4 ms: 723/753 bytes new/orig -> 96.0%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m12 22c5.5 0 10-4.5 10-10s-4.5-10-10-10-10 4.5-10 10 4.5 10 10 10z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="m15.996 12h0.0089" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+ <path d="m11.996 12h9e-3" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+ <path d="m7.9945 12h0.00898" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+</svg>

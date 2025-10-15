@@ -1,1 +1,8 @@
-Scour processed file "VignetteiOS/assets/icons/magicpen-svgrepo-com.svg" in 3 ms: 987/1090 bytes new/orig -> 90.6%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m3.5 20.5c0.83 0.83 2.17 0.83 3 0l13-13c0.83-0.83 0.83-2.17 0-3s-2.17-0.83-3 0l-13 13c-0.83 0.83-0.83 2.17 0 3z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="m18.01 8.99-3-3" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="M8.5 2.44L10 2L9.56 3.5L10 5L8.5 4.56L7 5L7.44 3.5L7 2L8.5 2.44Z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round"/>
+ <path d="M4.5 8.44L6 8L5.56 9.5L6 11L4.5 10.56L3 11L3.44 9.5L3 8L4.5 8.44Z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round"/>
+ <path d="M19.5 13.44L21 13L20.56 14.5L21 16L19.5 15.56L18 16L18.44 14.5L18 13L19.5 13.44Z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

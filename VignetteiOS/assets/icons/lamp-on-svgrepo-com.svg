@@ -1,1 +1,5 @@
-Scour processed file "VignetteiOS/assets/icons/lamp-on-svgrepo-com.svg" in 3 ms: 652/791 bytes new/orig -> 82.4%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m8.3001 18.04v-1.16c-2.3-1.39-4.19-4.1-4.19-6.98 0-4.95 4.55-8.83 9.69-7.71 2.26 0.5 4.24 2 5.27 4.07 2.09 4.2-0.11 8.66-3.34 10.61v1.16c0 0.29 0.11 0.96-0.96 0.96h-5.51c-1.1 0.01-0.96-0.42-0.96-0.95z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="m8.5 22c2.29-0.65 4.71-0.65 7 0" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+</svg>

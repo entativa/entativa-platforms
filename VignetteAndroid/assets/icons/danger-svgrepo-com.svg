@@ -1,1 +1,6 @@
-Scour processed file "VignetteAndroid/assets/icons/danger-svgrepo-com.svg" in 3 ms: 689/771 bytes new/orig -> 89.4%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m12 9v5" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="m12 21.41h-6.06c-3.47 0-4.92-2.48-3.24-5.51l3.12-5.62 2.94-5.28c1.78-3.21 4.7-3.21 6.48 0l2.94 5.29 3.12 5.62c1.68 3.03 0.22 5.51-3.24 5.51h-6.06v-0.01z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="m11.994 17h9e-3" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+</svg>

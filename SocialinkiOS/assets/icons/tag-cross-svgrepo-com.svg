@@ -1,1 +1,6 @@
-Scour processed file "SocialinkiOS/assets/icons/tag-cross-svgrepo-com.svg" in 3 ms: 680/799 bytes new/orig -> 85.1%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m10.28 20.25h6.72c2.76 0 5-2.24 5-5v-6.5c0-2.76-2.24-5-5-5h-6.72c-1.41 0-2.75 0.59-3.7 1.64l-3.53 3.88c-1.41 1.55-1.41 3.91 0 5.46l3.53 3.88c0.95 1.05 2.29 1.64 3.7 1.64z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="m16 14.47-4.94-4.94" stroke="#292D32" stroke-linecap="round" stroke-width="1.5"/>
+ <path d="m11.06 14.47 4.94-4.94" stroke="#292D32" stroke-linecap="round" stroke-width="1.5"/>
+</svg>

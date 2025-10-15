@@ -1,1 +1,8 @@
-Scour processed file "SocialinkAndroid/assets/icons/briefcase-svgrepo-com.svg" in 3 ms: 1188/1296 bytes new/orig -> 91.7%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m8 22h8c4.02 0 4.74-1.61 4.95-3.57l0.75-8c0.27-2.44-0.43-4.43-4.7-4.43h-10c-4.27 0-4.97 1.99-4.7 4.43l0.75 8c0.21 1.96 0.93 3.57 4.95 3.57z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5"/>
+ <path d="M8 6V5.2C8 3.43 8 2 11.2 2H12.8C16 2 16 3.43 16 5.2V6" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5"/>
+ <path d="m14 13v1 0.02c0 1.09-0.01 1.98-2 1.98-1.98 0-2-0.88-2-1.97v-1.03c0-1 0-1 1-1h2c1 0 1 0 1 1z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5"/>
+ <path d="m21.65 11c-2.31 1.68-4.95 2.68-7.65 3.02" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5"/>
+ <path d="m2.62 11.27c2.25 1.54 4.79 2.47 7.38 2.76" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="1.5"/>
+</svg>

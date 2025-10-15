@@ -1,1 +1,8 @@
-Scour processed file "SocialinkiOS/assets/icons/shop-svgrepo-com.svg" in 4 ms: 1181/1213 bytes new/orig -> 97.4%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m3.01 11.22v4.49c0 4.49 1.8 6.29 6.29 6.29h5.39c4.49 0 6.29-1.8 6.29-6.29v-4.49" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="M12 12C13.83 12 15.18 10.51 15 8.68L14.34 2H9.67L9 8.68C8.82 10.51 10.17 12 12 12Z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="m18.31 12c2.02 0 3.5-1.64 3.3-3.65l-0.28-2.75c-0.36-2.6-1.36-3.6-3.98-3.6h-3.05l0.7 7.01c0.17 1.65 1.66 2.99 3.31 2.99z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="M5.64 12C7.29 12 8.78 10.66 8.94 9.01L9.16 6.8L9.64001 2H6.59C3.97001 2 2.97 3 2.61 5.6L2.34 8.35C2.14 10.36 3.62 12 5.64 12Z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="m12 17c-1.67 0-2.5 0.83-2.5 2.5v2.5h5v-2.5c0-1.67-0.83-2.5-2.5-2.5z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+</svg>

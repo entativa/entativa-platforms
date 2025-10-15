@@ -1,1 +1,6 @@
-Scour processed file "VignetteiOS/assets/icons/menu-svgrepo-com.svg" in 2 ms: 468/471 bytes new/orig -> 99.4%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m3 7h18" stroke="#292D32" stroke-linecap="round" stroke-width="1.5"/>
+ <path d="m3 12h18" stroke="#292D32" stroke-linecap="round" stroke-width="1.5"/>
+ <path d="m3 17h18" stroke="#292D32" stroke-linecap="round" stroke-width="1.5"/>
+</svg>

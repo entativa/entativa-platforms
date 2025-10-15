@@ -1,1 +1,5 @@
-Scour processed file "VignetteiOS/assets/icons/location-svgrepo-com.svg" in 3 ms: 584/680 bytes new/orig -> 85.9%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m12 13.43c1.7231 0 3.12-1.3968 3.12-3.12 0-1.7231-1.3969-3.12-3.12-3.12s-3.12 1.3969-3.12 3.12c0 1.7232 1.3969 3.12 3.12 3.12z" stroke="#292D32" stroke-width="1.5"/>
+ <path d="m3.62 8.49c1.97-8.66 14.8-8.65 16.76 0.01 1.15 5.08-2.01 9.38-4.78 12.04-2.01 1.94-5.19 1.94-7.21 0-2.76-2.66-5.92-6.97-4.77-12.05z" stroke="#292D32" stroke-width="1.5"/>
+</svg>

@@ -1,1 +1,7 @@
-Scour processed file "SocialinkAndroid/assets/icons/non-binary-flag-icon-svgrepo-com.svg" in 4 ms: 497/529 bytes new/orig -> 94.0%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <rect x="2" y="12" width="20" height="3.5" fill="#925EC9"/>
+ <path d="M2 8.5H22V12H2V8.5Z" fill="#fff"/>
+ <path d="M2 7C2 5.89543 2.89543 5 4 5H20C21.1046 5 22 5.89543 22 7V8.5H2V7Z" fill="#FCF35E"/>
+ <path d="m2 15.5h20v1.5c0 1.1046-0.8954 2-2 2h-16c-1.1046 0-2-0.8954-2-2v-1.5z"/>
+</svg>

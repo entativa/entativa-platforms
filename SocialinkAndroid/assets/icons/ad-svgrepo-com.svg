@@ -1,1 +1,11 @@
-Scour processed file "SocialinkAndroid/assets/icons/ad-svgrepo-com.svg" in 5 ms: 702/1163 bytes new/orig -> 60.4%
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <g stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+  <path d="m5 5h14c1.1046 0 2 0.89543 2 2v10c0 1.1046-0.8954 2-2 2h-14c-1.1046 0-2-0.8954-2-2v-10c0-1.1046 0.89543-2 2-2z"/>
+  <path d="m7 15v-4c0-1.1046 0.89543-2 2-2 1.1046 0 2 0.89543 2 2v4"/>
+  <path d="m17 9v6"/>
+  <path d="m17 12h-1.5c-2 0-2 3 0 3h1.5"/>
+  <path d="m7 13h4"/>
+ </g>
+</svg>

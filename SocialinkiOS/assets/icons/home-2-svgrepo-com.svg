@@ -1,1 +1,5 @@
-Scour processed file "SocialinkiOS/assets/icons/home-2-svgrepo-com.svg" in 3 ms: 616/666 bytes new/orig -> 92.5%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m9.02 2.84-5.39 4.2c-0.9 0.7-1.63 2.19-1.63 3.32v7.41c0 2.32 1.89 4.22 4.21 4.22h11.58c2.32 0 4.21-1.9 4.21-4.21v-7.28c0-1.21-0.81-2.76-1.8-3.45l-6.18-4.33c-1.4-0.98-3.65-0.93-5 0.12z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="m12 17.99v-3" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+</svg>

@@ -1,1 +1,4 @@
-Scour processed file "SocialinkiOS/assets/icons/gender-nonbinary-fill-svgrepo-com-1.svg" in 3 ms: 595/634 bytes new/orig -> 93.8%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="#000000" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+ <path d="m136 88.424v-29.409l23.25 15.625a7.9999 7.9999 0 1 0 8.9248-13.279l-25.833-17.36 25.833-17.36a7.9999 7.9999 0 1 0-8.9248-13.279l-31.25 21.001-31.25-21.001a7.9999 7.9999 0 1 0-8.9248 13.279l25.833 17.36-25.833 17.36a7.9999 7.9999 0 1 0 8.9248 13.279l23.25-15.625v29.409a76 76 0 1 0 16 0zm-8 135.58a60 60 0 1 1 60-60 60.068 60.068 0 0 1-60 60z"/>
+</svg>

@@ -1,1 +1,5 @@
-Scour processed file "SocialinkAndroid/assets/icons/clock-1-svgrepo-com.svg" in 3 ms: 549/584 bytes new/orig -> 94.0%
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <path d="m22 12c0 5.52-4.48 10-10 10s-10-4.48-10-10 4.48-10 10-10 10 4.48 10 10z" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+ <path d="m15.71 15.18-3.1-1.85c-0.54-0.32-0.98-1.09-0.98-1.72v-4.1" stroke="#292D32" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+</svg>
