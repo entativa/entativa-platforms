@@ -954,4 +954,4 @@ def create_socialink_backend():
     print(f"📁 Total files/folders created: {sum(len(files) for files in structure.values()) + len(root_files)} items")
 
 if __name__ == "__main__":
-    create_socialink_backend_project()
+    create_socialink_backend()

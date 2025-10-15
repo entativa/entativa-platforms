@@ -639,6 +639,10 @@ def create_vignette_ios_project():
         for file in files:
             file_path = os.path.join(folder_path, file)
             if not file.endswith('.xcassets') and not file.endswith('.storyboard') and not file.endswith('.xcdatamodeld'):
+                parent_dir = os.path.dirname(file_path)
+                if parent_dir and not os.path.exists(parent_dir):
+                    os.makedirs(parent_dir)
+                    print(f"Created directory: {parent_dir}")
                 open(file_path, 'a').close()
                 print(f"Created: {file_path}")
             else:

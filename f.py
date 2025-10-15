@@ -1007,4 +1007,40 @@ def create_vignette_backend():
         
         "config": [
             "development.env",
-            "staging.
+            "staging.env",
+            "production.env"
+        ],
+
+    }
+    
+    base_dir = "VignetteBackend"
+    
+    if not os.path.exists(base_dir):
+        os.makedirs(base_dir)
+        print(f"Created root directory: {base_dir}")
+    
+    for file in root_files:
+        file_path = os.path.join(base_dir, file)
+        open(file_path, 'a').close()
+        print(f"Created: {file_path}")
+
+    for folder, files in structure.items():
+        folder_path = os.path.join(base_dir, folder)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+            print(f"Created directory: {folder_path}")
+        
+        for file in files:
+            file_path = os.path.join(folder_path, file)
+            parent_dir = os.path.dirname(file_path)
+            if parent_dir and not os.path.exists(parent_dir):
+                os.makedirs(parent_dir)
+                print(f"Created directory: {parent_dir}")
+            open(file_path, 'a').close()
+            print(f"Created: {file_path}")
+
+    print(f"\n✅ Vignette backend microservices structure created successfully in '{base_dir}/' directory!")
+    print(f"\n📦 Total files/folders created: {sum(len(files) for files in structure.values()) + len(root_files)} items")
+
+if __name__ == "__main__":
+    create_vignette_backend()
