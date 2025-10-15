@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package socialink.user;
+
+option go_package = "socialink/user-service/proto";
+
+import "google/protobuf/timestamp.proto";
+
+service UserService {
+  // Authentication
+  rpc GetUser(GetUserRequest) returns (UserResponse);
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  rpc GetUsersByIDs(GetUsersByIDsRequest) returns (GetUsersByIDsResponse);
+  
+  // 2FA
+  rpc VerifyTwoFactor(VerifyTwoFactorRequest) returns (VerifyTwoFactorResponse);
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message UserResponse {
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string username = 5;
+  string birthday = 6;
+  string gender = 7;
+  string profile_picture_url = 8;
+  string cover_photo_url = 9;
+  bool is_active = 10;
+  google.protobuf.Timestamp created_at = 11;
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool valid = 1;
+  string user_id = 2;
+  string email = 3;
+  string username = 4;
+}
+
+message GetUsersByIDsRequest {
+  repeated string user_ids = 1;
+}
+
+message GetUsersByIDsResponse {
+  repeated UserResponse users = 1;
+}
+
+message VerifyTwoFactorRequest {
+  string user_id = 1;
+  string code = 2;
+}
+
+message VerifyTwoFactorResponse {
+  bool valid = 1;
+  string message = 2;
+}

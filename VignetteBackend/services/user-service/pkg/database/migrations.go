@@ -62,5 +62,42 @@ func RunMigrations(db *sql.DB) error {
 		return fmt.Errorf("failed to create sessions table: %w", err)
 	}
 
+	// Create two_factor_auth table
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS two_factor_auth (
+			id UUID PRIMARY KEY,
+			user_id UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+			secret VARCHAR(255) NOT NULL,
+			is_enabled BOOLEAN DEFAULT false,
+			backup_codes JSONB,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			enabled_at TIMESTAMP,
+			last_used_at TIMESTAMP
+		);
+
+		CREATE INDEX IF NOT EXISTS idx_two_factor_user_id ON two_factor_auth(user_id);
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create two_factor_auth table: %w", err)
+	}
+
+	// Create password_reset_tokens table
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS password_reset_tokens (
+			id UUID PRIMARY KEY,
+			user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			token VARCHAR(255) NOT NULL,
+			expires_at TIMESTAMP NOT NULL,
+			used_at TIMESTAMP,
+			created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
+
+		CREATE INDEX IF NOT EXISTS idx_password_reset_user_id ON password_reset_tokens(user_id);
+		CREATE INDEX IF NOT EXISTS idx_password_reset_expires_at ON password_reset_tokens(expires_at);
+	`)
+	if err != nil {
+		return fmt.Errorf("failed to create password_reset_tokens table: %w", err)
+	}
+
 	return nil
 }

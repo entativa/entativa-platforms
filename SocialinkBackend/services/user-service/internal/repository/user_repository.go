@@ -250,3 +250,10 @@ func (r *UserRepository) UsernameExists(username string) (bool, error) {
 	err := r.db.QueryRow(query, username).Scan(&exists)
 	return exists, err
 }
+
+// UpdatePassword updates user's password
+func (r *UserRepository) UpdatePassword(userID uuid.UUID, hashedPassword string) error {
+	query := `UPDATE users SET password_hash = $1, updated_at = $2 WHERE id = $3`
+	_, err := r.db.Exec(query, hashedPassword, time.Now(), userID)
+	return err
+}

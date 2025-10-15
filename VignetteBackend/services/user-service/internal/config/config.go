@@ -11,6 +11,9 @@ type Config struct {
 	Database DatabaseConfig
 	Redis    RedisConfig
 	JWT      JWTConfig
+	S3       S3Config
+	Kafka    KafkaConfig
+	GRPC     GRPCConfig
 }
 
 type ServerConfig struct {
@@ -45,6 +48,26 @@ type JWTConfig struct {
 	RefreshTokenTTL time.Duration
 }
 
+type S3Config struct {
+	Endpoint        string
+	AccessKeyID     string
+	SecretAccessKey string
+	BucketName      string
+	Region          string
+	CDNURL          string
+	UsePathStyle    bool
+}
+
+type KafkaConfig struct {
+	Brokers []string
+	Enabled bool
+}
+
+type GRPCConfig struct {
+	Port    string
+	Enabled bool
+}
+
 // LoadConfig loads configuration from environment variables
 func LoadConfig() *Config {
 	return &Config{
@@ -76,6 +99,23 @@ func LoadConfig() *Config {
 			AccessTokenTTL:  time.Duration(getEnvAsInt("JWT_ACCESS_TOKEN_TTL", 86400)) * time.Second,  // 24 hours
 			RefreshTokenTTL: time.Duration(getEnvAsInt("JWT_REFRESH_TOKEN_TTL", 604800)) * time.Second, // 7 days
 		},
+		S3: S3Config{
+			Endpoint:        getEnv("S3_ENDPOINT", ""),
+			AccessKeyID:     getEnv("S3_ACCESS_KEY_ID", ""),
+			SecretAccessKey: getEnv("S3_SECRET_ACCESS_KEY", ""),
+			BucketName:      getEnv("S3_BUCKET_NAME", "vignette-media"),
+			Region:          getEnv("S3_REGION", "us-east-1"),
+			CDNURL:          getEnv("S3_CDN_URL", ""),
+			UsePathStyle:    getEnvAsBool("S3_USE_PATH_STYLE", true),
+		},
+		Kafka: KafkaConfig{
+			Brokers: getEnvAsSlice("KAFKA_BROKERS", []string{"localhost:9092"}),
+			Enabled: getEnvAsBool("KAFKA_ENABLED", false),
+		},
+		GRPC: GRPCConfig{
+			Port:    getEnv("GRPC_PORT", "9002"),
+			Enabled: getEnvAsBool("GRPC_ENABLED", true),
+		},
 	}
 }
 
@@ -92,4 +132,24 @@ func getEnvAsInt(key string, defaultValue int) int {
 		return value
 	}
 	return defaultValue
+}
+
+func getEnvAsBool(key string, defaultValue bool) bool {
+	valueStr := getEnv(key, "")
+	if valueStr == "" {
+		return defaultValue
+	}
+	value, err := strconv.ParseBool(valueStr)
+	if err != nil {
+		return defaultValue
+	}
+	return value
+}
+
+func getEnvAsSlice(key string, defaultValue []string) []string {
+	valueStr := getEnv(key, "")
+	if valueStr == "" {
+		return defaultValue
+	}
+	return []string{valueStr}
 }

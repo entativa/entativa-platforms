@@ -10,6 +10,13 @@ require (
 	github.com/redis/go-redis/v9 v9.3.0
 	golang.org/x/crypto v0.17.0
 	github.com/joho/godotenv v1.5.1
+	github.com/pquerna/otp v1.4.0
+	github.com/aws/aws-sdk-go v1.48.0
+	google.golang.org/grpc v1.60.0
+	google.golang.org/protobuf v1.31.0
+	github.com/segmentio/kafka-go v0.4.47
+	golang.org/x/time v0.5.0
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 )
 
 require (
