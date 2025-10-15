@@ -8,91 +8,80 @@ import (
 	"github.com/google/uuid"
 )
 
-// Post represents a social media post (Facebook-like)
+// Post represents an Facebook-style post (image/video required)
 type Post struct {
 	ID            uuid.UUID      `json:"id" db:"id"`
 	UserID        uuid.UUID      `json:"user_id" db:"user_id"`
-	Content       string         `json:"content" db:"content"`
-	MediaIDs      MediaIDList    `json:"media_ids" db:"media_ids"`
-	Privacy       Privacy        `json:"privacy" db:"privacy"`
-	Location      *string        `json:"location,omitempty" db:"location"`
+	Caption       string         `json:"caption" db:"caption"`
+	MediaIDs      MediaIDList    `json:"media_ids" db:"media_ids"` // Required for Socialink
+	Location      *Location      `json:"location,omitempty" db:"location"`
 	TaggedUserIDs UUIDList       `json:"tagged_user_ids" db:"tagged_user_ids"`
-	Feeling       *string        `json:"feeling,omitempty" db:"feeling"`
-	Activity      *string        `json:"activity,omitempty" db:"activity"`
+	Hashtags      StringList     `json:"hashtags" db:"hashtags"`
+	FilterUsed    *string        `json:"filter_used,omitempty" db:"filter_used"`
+	IsCarousel    bool           `json:"is_carousel" db:"is_carousel"`
 	LikesCount    int64          `json:"likes_count" db:"likes_count"`
 	CommentsCount int64          `json:"comments_count" db:"comments_count"`
+	ViewsCount    int64          `json:"views_count" db:"views_count"`
+	SavesCount    int64          `json:"saves_count" db:"saves_count"`
 	SharesCount   int64          `json:"shares_count" db:"shares_count"`
 	IsEdited      bool           `json:"is_edited" db:"is_edited"`
 	EditedAt      *time.Time     `json:"edited_at,omitempty" db:"edited_at"`
 	CreatedAt     time.Time      `json:"created_at" db:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at" db:"updated_at"`
 	DeletedAt     *time.Time     `json:"deleted_at,omitempty" db:"deleted_at"`
+	
+	// Facebook-specific
+	IsSponsored   bool           `json:"is_sponsored" db:"is_sponsored"`
+	IsReels       bool           `json:"is_reels" db:"is_reels"`
+	CommentsEnabled bool         `json:"comments_enabled" db:"comments_enabled"`
+	LikesVisible  bool           `json:"likes_visible" db:"likes_visible"`
 }
 
 // Comment represents a comment on a post
 type Comment struct {
-	ID        uuid.UUID  `json:"id" db:"id"`
-	PostID    uuid.UUID  `json:"post_id" db:"post_id"`
-	UserID    uuid.UUID  `json:"user_id" db:"user_id"`
-	ParentID  *uuid.UUID `json:"parent_id,omitempty" db:"parent_id"` // For nested comments
-	Content   string     `json:"content" db:"content"`
-	MediaID   *uuid.UUID `json:"media_id,omitempty" db:"media_id"`
-	LikesCount int64     `json:"likes_count" db:"likes_count"`
-	IsEdited  bool       `json:"is_edited" db:"is_edited"`
-	EditedAt  *time.Time `json:"edited_at,omitempty" db:"edited_at"`
-	CreatedAt time.Time  `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
-	DeletedAt *time.Time `json:"deleted_at,omitempty" db:"deleted_at"`
+	ID        uuid.UUID   `json:"id" db:"id"`
+	PostID    uuid.UUID   `json:"post_id" db:"post_id"`
+	UserID    uuid.UUID   `json:"user_id" db:"user_id"`
+	ParentID  *uuid.UUID  `json:"parent_id,omitempty" db:"parent_id"`
+	Content   string      `json:"content" db:"content"`
+	LikesCount int64      `json:"likes_count" db:"likes_count"`
+	IsEdited  bool        `json:"is_edited" db:"is_edited"`
+	EditedAt  *time.Time  `json:"edited_at,omitempty" db:"edited_at"`
+	CreatedAt time.Time   `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time   `json:"updated_at" db:"updated_at"`
+	DeletedAt *time.Time  `json:"deleted_at,omitempty" db:"deleted_at"`
 }
 
-// Like represents a like/reaction on a post or comment
+// Like represents a like on a post or comment
 type Like struct {
-	ID         uuid.UUID    `json:"id" db:"id"`
-	UserID     uuid.UUID    `json:"user_id" db:"user_id"`
-	PostID     *uuid.UUID   `json:"post_id,omitempty" db:"post_id"`
-	CommentID  *uuid.UUID   `json:"comment_id,omitempty" db:"comment_id"`
-	ReactionType ReactionType `json:"reaction_type" db:"reaction_type"`
-	CreatedAt  time.Time    `json:"created_at" db:"created_at"`
+	ID        uuid.UUID  `json:"id" db:"id"`
+	UserID    uuid.UUID  `json:"user_id" db:"user_id"`
+	PostID    *uuid.UUID `json:"post_id,omitempty" db:"post_id"`
+	CommentID *uuid.UUID `json:"comment_id,omitempty" db:"comment_id"`
+	CreatedAt time.Time  `json:"created_at" db:"created_at"`
 }
 
-// Share represents a shared post
-type Share struct {
-	ID          uuid.UUID  `json:"id" db:"id"`
-	UserID      uuid.UUID  `json:"user_id" db:"user_id"`
-	OriginalPostID uuid.UUID `json:"original_post_id" db:"original_post_id"`
-	Caption     *string    `json:"caption,omitempty" db:"caption"`
-	Privacy     Privacy    `json:"privacy" db:"privacy"`
-	CreatedAt   time.Time  `json:"created_at" db:"created_at"`
+// Save represents a saved post (Facebook bookmark feature)
+type Save struct {
+	ID        uuid.UUID  `json:"id" db:"id"`
+	UserID    uuid.UUID  `json:"user_id" db:"user_id"`
+	PostID    uuid.UUID  `json:"post_id" db:"post_id"`
+	Collection *string   `json:"collection,omitempty" db:"collection"`
+	CreatedAt time.Time  `json:"created_at" db:"created_at"`
 }
 
-// Privacy levels for posts
-type Privacy string
-
-const (
-	PrivacyPublic      Privacy = "public"
-	PrivacyFriends     Privacy = "friends"
-	PrivacyFriendsExcept Privacy = "friends_except"
-	PrivacySpecificFriends Privacy = "specific_friends"
-	PrivacyOnlyMe      Privacy = "only_me"
-	PrivacyCustom      Privacy = "custom"
-)
-
-// ReactionType for Facebook-like reactions
-type ReactionType string
-
-const (
-	ReactionLike  ReactionType = "like"
-	ReactionLove  ReactionType = "love"
-	ReactionHaha  ReactionType = "haha"
-	ReactionWow   ReactionType = "wow"
-	ReactionSad   ReactionType = "sad"
-	ReactionAngry ReactionType = "angry"
-	ReactionCare  ReactionType = "care"
-)
+// Location for Facebook-style location tagging
+type Location struct {
+	Name      string   `json:"name"`
+	Latitude  *float64 `json:"latitude,omitempty"`
+	Longitude *float64 `json:"longitude,omitempty"`
+	PlaceID   *string  `json:"place_id,omitempty"`
+}
 
 // Custom types for JSONB fields
 type UUIDList []uuid.UUID
 type MediaIDList []uuid.UUID
+type StringList []string
 
 // Scan implements sql.Scanner
 func (u *UUIDList) Scan(value interface{}) error {
@@ -142,68 +131,105 @@ func (m MediaIDList) Value() (driver.Value, error) {
 	return json.Marshal(m)
 }
 
+// Scan implements sql.Scanner for StringList
+func (s *StringList) Scan(value interface{}) error {
+	if value == nil {
+		*s = []string{}
+		return nil
+	}
+	
+	bytes, ok := value.([]byte)
+	if !ok {
+		*s = []string{}
+		return nil
+	}
+	
+	return json.Unmarshal(bytes, s)
+}
+
+// Value implements driver.Valuer for StringList
+func (s StringList) Value() (driver.Value, error) {
+	if len(s) == 0 {
+		return []byte("[]"), nil
+	}
+	return json.Marshal(s)
+}
+
+// Scan for Location
+func (l *Location) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	
+	bytes, ok := value.([]byte)
+	if !ok {
+		return nil
+	}
+	
+	return json.Unmarshal(bytes, l)
+}
+
+// Value for Location
+func (l Location) Value() (driver.Value, error) {
+	return json.Marshal(l)
+}
+
 // DTOs for API requests/responses
 
 type CreatePostRequest struct {
-	Content       string      `json:"content" binding:"required,max=10000"`
-	MediaIDs      []uuid.UUID `json:"media_ids,omitempty"`
-	Privacy       Privacy     `json:"privacy" binding:"required"`
-	Location      *string     `json:"location,omitempty"`
-	TaggedUserIDs []uuid.UUID `json:"tagged_user_ids,omitempty"`
-	Feeling       *string     `json:"feeling,omitempty"`
-	Activity      *string     `json:"activity,omitempty"`
+	Caption          string      `json:"caption" binding:"max=2200"`
+	MediaIDs         []uuid.UUID `json:"media_ids" binding:"required,min=1"` // At least 1 media required
+	Location         *Location   `json:"location,omitempty"`
+	TaggedUserIDs    []uuid.UUID `json:"tagged_user_ids,omitempty"`
+	Hashtags         []string    `json:"hashtags,omitempty"`
+	FilterUsed       *string     `json:"filter_used,omitempty"`
+	CommentsEnabled  bool        `json:"comments_enabled" binding:"required"`
+	LikesVisible     bool        `json:"likes_visible" binding:"required"`
 }
 
 type UpdatePostRequest struct {
-	Content  *string     `json:"content,omitempty" binding:"omitempty,max=10000"`
-	Privacy  *Privacy    `json:"privacy,omitempty"`
-	Location *string     `json:"location,omitempty"`
-	Feeling  *string     `json:"feeling,omitempty"`
-	Activity *string     `json:"activity,omitempty"`
+	Caption         *string    `json:"caption,omitempty" binding:"omitempty,max=2200"`
+	Location        *Location  `json:"location,omitempty"`
+	Hashtags        *[]string  `json:"hashtags,omitempty"`
+	CommentsEnabled *bool      `json:"comments_enabled,omitempty"`
+	LikesVisible    *bool      `json:"likes_visible,omitempty"`
 }
 
 type CreateCommentRequest struct {
-	Content  string     `json:"content" binding:"required,max=2000"`
+	Content  string     `json:"content" binding:"required,max=2200"`
 	ParentID *uuid.UUID `json:"parent_id,omitempty"`
-	MediaID  *uuid.UUID `json:"media_id,omitempty"`
 }
 
 type UpdateCommentRequest struct {
-	Content string `json:"content" binding:"required,max=2000"`
+	Content string `json:"content" binding:"required,max=2200"`
 }
 
-type LikeRequest struct {
-	ReactionType ReactionType `json:"reaction_type" binding:"required"`
-}
-
-type SharePostRequest struct {
-	Caption *string `json:"caption,omitempty" binding:"omitempty,max=1000"`
-	Privacy Privacy `json:"privacy" binding:"required"`
+type SavePostRequest struct {
+	Collection *string `json:"collection,omitempty"`
 }
 
 type PostResponse struct {
 	*Post
-	User      *UserInfo     `json:"user,omitempty"`
-	MediaURLs []MediaInfo   `json:"media_urls,omitempty"`
-	TaggedUsers []UserInfo  `json:"tagged_users,omitempty"`
-	UserReaction *ReactionType `json:"user_reaction,omitempty"`
-	IsLiked   bool          `json:"is_liked"`
+	User         *UserInfo   `json:"user,omitempty"`
+	MediaURLs    []MediaInfo `json:"media_urls,omitempty"`
+	TaggedUsers  []UserInfo  `json:"tagged_users,omitempty"`
+	IsLiked      bool        `json:"is_liked"`
+	IsSaved      bool        `json:"is_saved"`
 }
 
 type CommentResponse struct {
 	*Comment
-	User         *UserInfo     `json:"user,omitempty"`
-	MediaURL     *string       `json:"media_url,omitempty"`
-	RepliesCount int64         `json:"replies_count,omitempty"`
-	UserReaction *ReactionType `json:"user_reaction,omitempty"`
+	User         *UserInfo `json:"user,omitempty"`
+	RepliesCount int64     `json:"replies_count,omitempty"`
+	IsLiked      bool      `json:"is_liked"`
 }
 
 type UserInfo struct {
-	ID              uuid.UUID `json:"id"`
-	Username        string    `json:"username"`
-	FirstName       string    `json:"first_name"`
-	LastName        string    `json:"last_name"`
-	ProfilePicture  *string   `json:"profile_picture,omitempty"`
+	ID             uuid.UUID `json:"id"`
+	Username       string    `json:"username"`
+	FullName       string    `json:"full_name"`
+	ProfilePicture *string   `json:"profile_picture,omitempty"`
+	IsVerified     bool      `json:"is_verified"`
 }
 
 type MediaInfo struct {
@@ -214,6 +240,7 @@ type MediaInfo struct {
 	Width        int32     `json:"width"`
 	Height       int32     `json:"height"`
 	Blurhash     *string   `json:"blurhash,omitempty"`
+	FilterUsed   *string   `json:"filter_used,omitempty"`
 }
 
 type FeedQuery struct {

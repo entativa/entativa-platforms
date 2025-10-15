@@ -18,6 +18,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
+	"net/http"
 )
 
 func main() {
@@ -71,19 +72,18 @@ func main() {
 	postRepo := repository.NewPostRepository(db)
 	commentRepo := repository.NewCommentRepository(db)
 	likeRepo := repository.NewLikeRepository(db)
-	shareRepo := repository.NewShareRepository(db)
+	saveRepo := repository.NewSaveRepository(db)
 
 	// Initialize services
-	postService := service.NewPostService(postRepo, likeRepo, commentRepo, shareRepo, redisClient, kafkaProducer)
+	postService := service.NewPostService(postRepo, likeRepo, commentRepo, saveRepo, redisClient, kafkaProducer)
 	commentService := service.NewCommentService(commentRepo, postRepo, redisClient, kafkaProducer)
 	likeService := service.NewLikeService(likeRepo, postRepo, commentRepo, redisClient, kafkaProducer)
-	shareService := service.NewShareService(shareRepo, postRepo, kafkaProducer)
 
 	// Initialize handlers
 	postHandler := handler.NewPostHandler(postService)
 	commentHandler := handler.NewCommentHandler(commentService)
 	likeHandler := handler.NewLikeHandler(likeService)
-	shareHandler := handler.NewShareHandler(shareService)
+	saveHandler := handler.NewSaveHandler(postService)
 
 	// Setup Gin router
 	if getEnv("GIN_MODE", "debug") == "release" {
@@ -112,24 +112,26 @@ func main() {
 		{
 			posts.POST("", authMiddleware(), postHandler.CreatePost)
 			posts.GET("/feed", authMiddleware(), postHandler.GetFeed)
-			posts.GET("/trending", postHandler.GetTrendingPosts)
+			posts.GET("/explore", postHandler.GetExplorePosts)
+			posts.GET("/reels", postHandler.GetReels)
+			posts.GET("/hashtag/:hashtag", postHandler.GetPostsByHashtag)
 			posts.GET("/:post_id", postHandler.GetPost)
 			posts.PUT("/:post_id", authMiddleware(), postHandler.UpdatePost)
 			posts.DELETE("/:post_id", authMiddleware(), postHandler.DeletePost)
 			posts.GET("/user/:user_id", postHandler.GetUserPosts)
 
-			// Comment routes (nested under posts)
+			// Comment routes (nested)
 			posts.POST("/:post_id/comments", authMiddleware(), commentHandler.CreateComment)
 			posts.GET("/:post_id/comments", commentHandler.GetComments)
 
-			// Like routes (nested under posts)
+			// Like routes (nested)
 			posts.POST("/:post_id/like", authMiddleware(), likeHandler.LikePost)
 			posts.DELETE("/:post_id/like", authMiddleware(), likeHandler.UnlikePost)
 			posts.GET("/:post_id/likes", likeHandler.GetPostLikers)
 
-			// Share routes (nested under posts)
-			posts.POST("/:post_id/share", authMiddleware(), shareHandler.SharePost)
-			posts.GET("/:post_id/shares", shareHandler.GetPostShares)
+			// Save routes (nested)
+			posts.POST("/:post_id/save", authMiddleware(), saveHandler.SavePost)
+			posts.DELETE("/:post_id/save", authMiddleware(), saveHandler.UnsavePost)
 		}
 
 		// Comment routes (standalone)
@@ -142,11 +144,8 @@ func main() {
 			comments.DELETE("/:comment_id/like", authMiddleware(), likeHandler.UnlikeComment)
 		}
 
-		// Share routes (standalone)
-		shares := v1.Group("/shares")
-		{
-			shares.DELETE("/:share_id", authMiddleware(), shareHandler.DeleteShare)
-		}
+		// Saved posts
+		v1.GET("/saved", authMiddleware(), saveHandler.GetSavedPosts)
 	}
 
 	// Start server
@@ -161,21 +160,18 @@ func main() {
 		Handler: router,
 	}
 
-	// Start server in goroutine
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()
 
-	// Wait for interrupt signal
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
 	log.Println("Shutting down server...")
 
-	// Graceful shutdown with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -190,7 +186,6 @@ func main() {
 
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Extract JWT token from Authorization header
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
@@ -201,7 +196,6 @@ func authMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// For now, expect X-User-ID header (set by API gateway after JWT verification)
 		userID := c.GetHeader("X-User-ID")
 		if userID == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
@@ -232,8 +226,6 @@ func corsMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
-
-// Helper functions
 
 func getEnv(key, defaultValue string) string {
 	if value := os.Getenv(key); value != "" {

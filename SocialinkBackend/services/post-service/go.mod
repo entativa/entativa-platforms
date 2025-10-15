@@ -1,4 +1,4 @@
-module socialink/post-service
+module vignette/post-service
 
 go 1.21
 

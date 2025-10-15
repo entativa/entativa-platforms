@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"socialink/post-service/internal/model"
@@ -14,19 +16,19 @@ import (
 )
 
 type PostService struct {
-	postRepo    repository.PostRepository
-	likeRepo    repository.LikeRepository
+	postRepo repository.PostRepository
+	likeRepo repository.LikeRepository
 	commentRepo repository.CommentRepository
-	shareRepo   repository.ShareRepository
-	redis       *redis.Client
-	kafka       *kafka.Producer
+	saveRepo repository.SaveRepository
+	redis    *redis.Client
+	kafka    *kafka.Producer
 }
 
 func NewPostService(
 	postRepo repository.PostRepository,
 	likeRepo repository.LikeRepository,
 	commentRepo repository.CommentRepository,
-	shareRepo repository.ShareRepository,
+	saveRepo repository.SaveRepository,
 	redis *redis.Client,
 	kafka *kafka.Producer,
 ) *PostService {
@@ -34,36 +36,50 @@ func NewPostService(
 		postRepo:    postRepo,
 		likeRepo:    likeRepo,
 		commentRepo: commentRepo,
-		shareRepo:   shareRepo,
+		saveRepo:    saveRepo,
 		redis:       redis,
 		kafka:       kafka,
 	}
 }
 
-// CreatePost creates a new post
+// CreatePost creates a new Facebook-style post (media required)
 func (s *PostService) CreatePost(ctx context.Context, userID uuid.UUID, req *model.CreatePostRequest) (*model.Post, error) {
-	// Validate privacy setting
-	if !s.isValidPrivacy(req.Privacy) {
-		return nil, fmt.Errorf("invalid privacy setting")
+	// Validate media is provided (Facebook requires media)
+	if len(req.MediaIDs) == 0 {
+		return nil, fmt.Errorf("at least one media attachment is required")
 	}
+
+	// Extract hashtags from caption
+	hashtags := s.extractHashtags(req.Caption)
+	if len(req.Hashtags) > 0 {
+		hashtags = append(hashtags, req.Hashtags...)
+		hashtags = s.deduplicateStrings(hashtags)
+	}
+
+	// Determine if carousel (multiple images)
+	isCarousel := len(req.MediaIDs) > 1
 
 	// Create post
 	post := &model.Post{
-		ID:            uuid.New(),
-		UserID:        userID,
-		Content:       req.Content,
-		MediaIDs:      req.MediaIDs,
-		Privacy:       req.Privacy,
-		Location:      req.Location,
-		TaggedUserIDs: req.TaggedUserIDs,
-		Feeling:       req.Feeling,
-		Activity:      req.Activity,
-		LikesCount:    0,
-		CommentsCount: 0,
-		SharesCount:   0,
-		IsEdited:      false,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
+		ID:              uuid.New(),
+		UserID:          userID,
+		Caption:         req.Caption,
+		MediaIDs:        req.MediaIDs,
+		Location:        req.Location,
+		TaggedUserIDs:   req.TaggedUserIDs,
+		Hashtags:        hashtags,
+		FilterUsed:      req.FilterUsed,
+		IsCarousel:      isCarousel,
+		LikesCount:      0,
+		CommentsCount:   0,
+		ViewsCount:      0,
+		SavesCount:      0,
+		SharesCount:     0,
+		IsEdited:        false,
+		CommentsEnabled: req.CommentsEnabled,
+		LikesVisible:    req.LikesVisible,
+		CreatedAt:       time.Now(),
+		UpdatedAt:       time.Now(),
 	}
 
 	if err := s.postRepo.Create(ctx, post); err != nil {
@@ -79,15 +95,11 @@ func (s *PostService) CreatePost(ctx context.Context, userID uuid.UUID, req *mod
 	return post, nil
 }
 
-// GetPost retrieves a post by ID with permission check
-func (s *PostService) GetPost(ctx context.Context, postID, requestingUserID uuid.UUID) (*model.Post, error) {
+// GetPost retrieves a post by ID
+func (s *PostService) GetPost(ctx context.Context, postID uuid.UUID) (*model.Post, error) {
 	// Try cache first
 	if post, err := s.getPostFromCache(ctx, postID); err == nil && post != nil {
-		// Check permissions
-		if s.canViewPost(ctx, post, requestingUserID) {
-			return post, nil
-		}
-		return nil, fmt.Errorf("permission denied")
+		return post, nil
 	}
 
 	// Get from database
@@ -96,13 +108,13 @@ func (s *PostService) GetPost(ctx context.Context, postID, requestingUserID uuid
 		return nil, err
 	}
 
-	// Check permissions
-	if !s.canViewPost(ctx, post, requestingUserID) {
-		return nil, fmt.Errorf("permission denied")
-	}
-
 	// Cache it
 	s.cachePost(ctx, post)
+
+	// Increment view count asynchronously
+	go func() {
+		s.postRepo.IncrementViews(context.Background(), postID)
+	}()
 
 	return post, nil
 }
@@ -121,20 +133,23 @@ func (s *PostService) UpdatePost(ctx context.Context, postID, userID uuid.UUID, 
 	}
 
 	// Update fields
-	if req.Content != nil {
-		post.Content = *req.Content
-	}
-	if req.Privacy != nil {
-		post.Privacy = *req.Privacy
+	if req.Caption != nil {
+		post.Caption = *req.Caption
+		// Re-extract hashtags
+		post.Hashtags = s.extractHashtags(post.Caption)
+		if req.Hashtags != nil {
+			post.Hashtags = append(post.Hashtags, *req.Hashtags...)
+			post.Hashtags = s.deduplicateStrings(post.Hashtags)
+		}
 	}
 	if req.Location != nil {
 		post.Location = req.Location
 	}
-	if req.Feeling != nil {
-		post.Feeling = req.Feeling
+	if req.CommentsEnabled != nil {
+		post.CommentsEnabled = *req.CommentsEnabled
 	}
-	if req.Activity != nil {
-		post.Activity = req.Activity
+	if req.LikesVisible != nil {
+		post.LikesVisible = *req.LikesVisible
 	}
 
 	now := time.Now()
@@ -184,21 +199,8 @@ func (s *PostService) DeletePost(ctx context.Context, postID, userID uuid.UUID) 
 }
 
 // GetUserPosts retrieves posts by a user
-func (s *PostService) GetUserPosts(ctx context.Context, userID, requestingUserID uuid.UUID, limit, offset int) ([]model.Post, error) {
-	posts, err := s.postRepo.GetByUserID(ctx, userID, limit, offset)
-	if err != nil {
-		return nil, err
-	}
-
-	// Filter based on permissions
-	var visiblePosts []model.Post
-	for _, post := range posts {
-		if s.canViewPost(ctx, &post, requestingUserID) {
-			visiblePosts = append(visiblePosts, post)
-		}
-	}
-
-	return visiblePosts, nil
+func (s *PostService) GetUserPosts(ctx context.Context, userID uuid.UUID, limit, offset int) ([]model.Post, error) {
+	return s.postRepo.GetByUserID(ctx, userID, limit, offset)
 }
 
 // GetFeed retrieves the user's personalized feed
@@ -230,59 +232,104 @@ func (s *PostService) GetFeed(ctx context.Context, userID uuid.UUID, cursor stri
 	return posts, nextCursor, nil
 }
 
-// GetTrendingPosts retrieves trending posts
-func (s *PostService) GetTrendingPosts(ctx context.Context, limit int) ([]model.Post, error) {
+// GetExplorePosts retrieves explore page posts
+func (s *PostService) GetExplorePosts(ctx context.Context, limit int) ([]model.Post, error) {
 	// Check cache
-	cacheKey := fmt.Sprintf("trending:posts:%d", limit)
+	cacheKey := fmt.Sprintf("explore:posts:%d", limit)
 	if cachedPosts, err := s.getTrendingFromCache(ctx, cacheKey); err == nil && len(cachedPosts) > 0 {
 		return cachedPosts, nil
 	}
 
-	// Get from database (last 24 hours)
-	posts, err := s.postRepo.GetTrendingPosts(ctx, limit, 24*time.Hour)
+	// Get trending posts for explore
+	posts, err := s.postRepo.GetTrendingPosts(ctx, limit, 48*time.Hour)
 	if err != nil {
 		return nil, err
 	}
 
-	// Cache for 5 minutes
-	s.cacheTrending(ctx, cacheKey, posts, 5*time.Minute)
+	// Cache for 10 minutes
+	s.cacheTrending(ctx, cacheKey, posts, 10*time.Minute)
 
 	return posts, nil
 }
 
-// Permission checking
-func (s *PostService) canViewPost(ctx context.Context, post *model.Post, viewerID uuid.UUID) bool {
-	// Post owner can always view
-	if post.UserID == viewerID {
-		return true
+// SavePost saves a post to user's saved collection
+func (s *PostService) SavePost(ctx context.Context, userID, postID uuid.UUID, collection *string) error {
+	// Verify post exists
+	if _, err := s.postRepo.GetByID(ctx, postID); err != nil {
+		return fmt.Errorf("post not found")
 	}
 
-	// Check privacy
-	switch post.Privacy {
-	case model.PrivacyPublic:
-		return true
-	case model.PrivacyOnlyMe:
-		return false
-	case model.PrivacyFriends:
-		// In production, check if viewer is friend
-		// For now, allow if authenticated
-		return viewerID != uuid.Nil
-	default:
-		return false
+	save := &model.Save{
+		ID:         uuid.New(),
+		UserID:     userID,
+		PostID:     postID,
+		Collection: collection,
+		CreatedAt:  time.Now(),
 	}
+
+	if err := s.saveRepo.Create(ctx, save); err != nil {
+		return fmt.Errorf("failed to save post: %w", err)
+	}
+
+	// Increment saves count
+	s.postRepo.IncrementSaves(ctx, postID)
+
+	return nil
 }
 
-func (s *PostService) isValidPrivacy(privacy model.Privacy) bool {
-	switch privacy {
-	case model.PrivacyPublic, model.PrivacyFriends, model.PrivacyFriendsExcept,
-		model.PrivacySpecificFriends, model.PrivacyOnlyMe, model.PrivacyCustom:
-		return true
-	default:
-		return false
+// UnsavePost removes a post from saved collection
+func (s *PostService) UnsavePost(ctx context.Context, userID, postID uuid.UUID) error {
+	if err := s.saveRepo.Delete(ctx, userID, postID); err != nil {
+		return fmt.Errorf("failed to unsave post: %w", err)
 	}
+
+	// Decrement saves count
+	s.postRepo.DecrementSaves(ctx, postID)
+
+	return nil
 }
 
-// Cache methods
+// GetSavedPosts retrieves user's saved posts
+func (s *PostService) GetSavedPosts(ctx context.Context, userID uuid.UUID, collection *string, limit, offset int) ([]model.Save, error) {
+	return s.saveRepo.GetByUserID(ctx, userID, collection, limit, offset)
+}
+
+// Helper functions
+
+func (s *PostService) extractHashtags(caption string) []string {
+	var hashtags []string
+	words := strings.Fields(caption)
+	
+	for _, word := range words {
+		if strings.HasPrefix(word, "#") && len(word) > 1 {
+			hashtag := strings.TrimPrefix(word, "#")
+			hashtag = strings.ToLower(hashtag)
+			// Remove punctuation from end
+			hashtag = strings.TrimRight(hashtag, ".,!?;:")
+			if len(hashtag) > 0 {
+				hashtags = append(hashtags, hashtag)
+			}
+		}
+	}
+	
+	return s.deduplicateStrings(hashtags)
+}
+
+func (s *PostService) deduplicateStrings(strs []string) []string {
+	seen := make(map[string]bool)
+	result := []string{}
+	
+	for _, str := range strs {
+		if !seen[str] {
+			seen[str] = true
+			result = append(result, str)
+		}
+	}
+	
+	return result
+}
+
+// Cache methods (same as Socialink with minor adjustments)
 func (s *PostService) cachePost(ctx context.Context, post *model.Post) {
 	if s.redis == nil {
 		return
@@ -396,7 +443,8 @@ func (s *PostService) publishPostCreatedEvent(post *model.Post) {
 		"event_type": "post.created",
 		"post_id":    post.ID.String(),
 		"user_id":    post.UserID.String(),
-		"privacy":    post.Privacy,
+		"is_reels":   post.IsReels,
+		"hashtags":   post.Hashtags,
 		"created_at": post.CreatedAt,
 	}
 
@@ -432,6 +480,3 @@ func (s *PostService) publishPostDeletedEvent(postID, userID uuid.UUID) {
 
 	s.kafka.PublishEvent(context.Background(), "post-events", postID.String(), event)
 }
-
-// Add missing import
-import "encoding/json"
