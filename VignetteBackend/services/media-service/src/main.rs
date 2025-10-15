@@ -1,5 +1,6 @@
 mod config;
 mod handlers;
+mod metrics;
 mod models;
 mod services;
 mod storage;
@@ -178,6 +179,14 @@ async fn health_check() -> actix_web::Result<actix_web::HttpResponse> {
 }
 
 async fn metrics() -> actix_web::Result<actix_web::HttpResponse> {
-    // Placeholder for Prometheus metrics
-    Ok(actix_web::HttpResponse::Ok().body("# Metrics placeholder\n"))
+    match metrics::collect_metrics() {
+        Ok(metrics_output) => Ok(actix_web::HttpResponse::Ok()
+            .content_type("text/plain; version=0.0.4")
+            .body(metrics_output)),
+        Err(e) => {
+            tracing::error!("Failed to collect metrics: {}", e);
+            Ok(actix_web::HttpResponse::InternalServerError()
+                .body(format!("Error collecting metrics: {}", e)))
+        }
+    }
 }

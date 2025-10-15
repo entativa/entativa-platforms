@@ -35,11 +35,16 @@ minio = "0.1"
 image = { version = "0.24", features = ["png", "jpeg", "gif", "webp", "tiff"] }
 imageproc = "0.23"
 fast_image_resize = "3.0"
+ab_glyph = "0.2"
+blurhash = "0.2"
+kmeans_colors = "0.5"
+palette = "0.7"
 
 # Video Processing
 ffmpeg-next = "6.0"
 gstreamer = "0.21"
 gstreamer-video = "0.21"
+opencv = { version = "0.88", default-features = false }
 
 # Audio Processing
 symphonia = { version = "0.5", features = ["all"] }
