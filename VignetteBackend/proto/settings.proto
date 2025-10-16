@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package vignette.settings;
+
+option go_package = "github.com/entativa/vignette/proto/settings";
+
+// Settings Service - App settings and encrypted key backup
+service SettingsService {
+  rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
+  rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
+  
+  // Encrypted key backup
+  rpc CreateKeyBackup(CreateKeyBackupRequest) returns (CreateKeyBackupResponse);
+  rpc RestoreKeyBackup(RestoreKeyBackupRequest) returns (RestoreKeyBackupResponse);
+  rpc GetKeyBackupInfo(GetKeyBackupInfoRequest) returns (GetKeyBackupInfoResponse);
+}
+
+message GetSettingsRequest {
+  string user_id = 1;
+}
+
+message GetSettingsResponse {
+  string settings_json = 1; // JSON blob of all settings
+}
+
+message UpdateSettingsRequest {
+  string user_id = 1;
+  string settings_json = 2; // JSON blob of settings to update
+}
+
+message UpdateSettingsResponse {
+  bool success = 1;
+}
+
+message CreateKeyBackupRequest {
+  string user_id = 1;
+  string storage_location = 2;
+  string encryption_method = 3;
+  string pin = 4;
+  string encrypted_keys = 5; // Base64 encoded
+  string device_id = 6;
+  string device_name = 7;
+}
+
+message CreateKeyBackupResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message RestoreKeyBackupRequest {
+  string user_id = 1;
+  string pin = 2;
+}
+
+message RestoreKeyBackupResponse {
+  string encrypted_keys = 1; // Base64 encoded
+  int32 backup_version = 2;
+  string backup_date = 3;
+}
+
+message GetKeyBackupInfoRequest {
+  string user_id = 1;
+}
+
+message GetKeyBackupInfoResponse {
+  bool has_backup = 1;
+  string storage_location = 2;
+  string encryption_method = 3;
+  string last_backup_at = 4;
+  int32 backup_version = 5;
+}

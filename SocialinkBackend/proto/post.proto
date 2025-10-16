@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+package socialink.post;
+
+option go_package = "github.com/entativa/socialink/proto/post";
+
+// Posting Service - Posts, Takes, Comments, Likes
+service PostService {
+  rpc CreatePost(CreatePostRequest) returns (CreatePostResponse);
+  rpc GetPost(GetPostRequest) returns (GetPostResponse);
+  rpc GetUserPosts(GetUserPostsRequest) returns (GetUserPostsResponse);
+  rpc LikePost(LikePostRequest) returns (LikePostResponse);
+  rpc CommentOnPost(CommentOnPostRequest) returns (CommentOnPostResponse);
+  rpc GetPostComments(GetPostCommentsRequest) returns (GetPostCommentsResponse);
+  
+  // Takes (Reels)
+  rpc CreateTake(CreateTakeRequest) returns (CreateTakeResponse);
+  rpc GetTake(GetTakeRequest) returns (GetTakeResponse);
+  rpc GetTakeFeed(GetTakeFeedRequest) returns (GetTakeFeedResponse);
+}
+
+message CreatePostRequest {
+  string user_id = 1;
+  string content = 2;
+  repeated string media_urls = 3;
+  optional string location = 4;
+  repeated string hashtags = 5;
+}
+
+message CreatePostResponse {
+  string post_id = 1;
+  bool success = 2;
+}
+
+message GetPostRequest {
+  string post_id = 1;
+}
+
+message GetPostResponse {
+  string post_id = 1;
+  string user_id = 2;
+  string content = 3;
+  repeated string media_urls = 4;
+  int32 likes_count = 5;
+  int32 comments_count = 6;
+  string created_at = 7;
+}
+
+message GetUserPostsRequest {
+  string user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message GetUserPostsResponse {
+  repeated GetPostResponse posts = 1;
+  int32 total = 2;
+}
+
+message LikePostRequest {
+  string post_id = 1;
+  string user_id = 2;
+}
+
+message LikePostResponse {
+  bool success = 1;
+}
+
+message CommentOnPostRequest {
+  string post_id = 1;
+  string user_id = 2;
+  string content = 3;
+}
+
+message CommentOnPostResponse {
+  string comment_id = 1;
+  bool success = 2;
+}
+
+message GetPostCommentsRequest {
+  string post_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message GetPostCommentsResponse {
+  repeated Comment comments = 1;
+  int32 total = 2;
+}
+
+message Comment {
+  string comment_id = 1;
+  string user_id = 2;
+  string content = 3;
+  string created_at = 4;
+}
+
+// Takes (Reels)
+message CreateTakeRequest {
+  string user_id = 1;
+  string video_url = 2;
+  string caption = 3;
+  repeated string hashtags = 4;
+  optional string audio_id = 5;
+}
+
+message CreateTakeResponse {
+  string take_id = 1;
+  bool success = 2;
+}
+
+message GetTakeRequest {
+  string take_id = 1;
+}
+
+message GetTakeResponse {
+  string take_id = 1;
+  string user_id = 2;
+  string video_url = 3;
+  string caption = 4;
+  int32 views_count = 5;
+  int32 likes_count = 6;
+  string created_at = 7;
+}
+
+message GetTakeFeedRequest {
+  string user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message GetTakeFeedResponse {
+  repeated GetTakeResponse takes = 1;
+}

@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package socialink.event;
+
+option go_package = "github.com/entativa/socialink/proto/event";
+
+// Event Service - Facebook-style events (Socialink only)
+service EventService {
+  rpc CreateEvent(CreateEventRequest) returns (CreateEventResponse);
+  rpc GetEvent(GetEventRequest) returns (GetEventResponse);
+  rpc GetUpcomingEvents(GetUpcomingEventsRequest) returns (GetUpcomingEventsResponse);
+  rpc RSVPToEvent(RSVPToEventRequest) returns (RSVPToEventResponse);
+  rpc GetEventAttendees(GetEventAttendeesRequest) returns (GetEventAttendeesResponse);
+  rpc SearchEvents(SearchEventsRequest) returns (SearchEventsResponse);
+  rpc GetNearbyEvents(GetNearbyEventsRequest) returns (GetNearbyEventsResponse);
+}
+
+message CreateEventRequest {
+  string user_id = 1;
+  string title = 2;
+  string description = 3;
+  string type = 4; // in_person, online
+  string category = 5;
+  string privacy = 6; // public, private, friends
+  optional string location_name = 7;
+  optional double latitude = 8;
+  optional double longitude = 9;
+  optional string online_link = 10;
+  string start_time = 11;
+  optional string end_time = 12;
+}
+
+message CreateEventResponse {
+  string event_id = 1;
+  bool success = 2;
+}
+
+message GetEventRequest {
+  string event_id = 1;
+}
+
+message GetEventResponse {
+  string event_id = 1;
+  string creator_id = 2;
+  string title = 3;
+  string description = 4;
+  string type = 5;
+  string location_name = 6;
+  string start_time = 7;
+  int32 going_count = 8;
+  int32 interested_count = 9;
+}
+
+message GetUpcomingEventsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+  optional string category = 3;
+}
+
+message GetUpcomingEventsResponse {
+  repeated GetEventResponse events = 1;
+  int32 total = 2;
+}
+
+message RSVPToEventRequest {
+  string event_id = 1;
+  string user_id = 2;
+  string status = 3; // going, interested, not_going
+  int32 guest_count = 4;
+}
+
+message RSVPToEventResponse {
+  bool success = 1;
+}
+
+message GetEventAttendeesRequest {
+  string event_id = 1;
+  string status = 2; // going, interested
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GetEventAttendeesResponse {
+  repeated Attendee attendees = 1;
+  int32 total = 2;
+}
+
+message Attendee {
+  string user_id = 1;
+  string status = 2;
+  int32 guest_count = 3;
+}
+
+message SearchEventsRequest {
+  string query = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message SearchEventsResponse {
+  repeated GetEventResponse events = 1;
+}
+
+message GetNearbyEventsRequest {
+  double latitude = 1;
+  double longitude = 2;
+  int32 radius_km = 3;
+  int32 limit = 4;
+}
+
+message GetNearbyEventsResponse {
+  repeated GetEventResponse events = 1;
+}
