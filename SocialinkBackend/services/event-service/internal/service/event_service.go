@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/entativa/socialink/event-service/internal/model"
-	"github.com/entativa/socialink/event-service/internal/repository"
+	"socialink/event-service/internal/model"
+	"socialink/event-service/internal/repository"
 	"github.com/google/uuid"
 )
 

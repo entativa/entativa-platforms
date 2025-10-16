@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/entativa/socialink/live-streaming-service/internal/handler"
-	mediagrpc "github.com/entativa/socialink/live-streaming-service/internal/grpc"
-	"github.com/entativa/socialink/live-streaming-service/internal/repository"
-	"github.com/entativa/socialink/live-streaming-service/internal/service"
-	"github.com/entativa/socialink/live-streaming-service/internal/websocket"
+	"socialink/live-streaming-service/internal/handler"
+	mediagrpc "socialink/live-streaming-service/internal/grpc"
+	"socialink/live-streaming-service/internal/repository"
+	"socialink/live-streaming-service/internal/service"
+	"socialink/live-streaming-service/internal/websocket"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -123,14 +123,9 @@ func main() {
 			return
 		}
 
-		client := &websocket.Client{
-			conn:     conn,
-			streamID: streamID,
-			userID:   userID,
-			send:     make(chan []byte, 256),
-		}
+		client := websocket.NewClient(chatHub, conn, streamID, userID)
 
-		chatHub.register <- client
+		chatHub.Register <- client
 
 		go client.WritePump()
 		go client.ReadPump()
@@ -148,7 +143,7 @@ func main() {
 			"version": "1.0.0",
 			"features": []string{
 				"YouTube-quality streaming (up to 4K)",
-				"Follower threshold (50 friends)",
+				"Follower threshold (100 followers)",
 				"Real-time comments",
 				"Live reactions",
 				"Viewer analytics",
@@ -181,7 +176,7 @@ func main() {
 	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8097"
+		port = "8098"
 	}
 
 	log.Printf("🚀 Socialink Live Streaming Service starting on port %s", port)

@@ -7,16 +7,31 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/entativa/vignette/live-streaming-service/internal/model"
-	"github.com/entativa/vignette/live-streaming-service/internal/repository"
+	"vignette/live-streaming-service/internal/model"
+	"vignette/live-streaming-service/internal/repository"
+	"vignette/live-streaming-service/internal/grpc"
 	"github.com/google/uuid"
 )
+
+// Stub types for external dependencies
+type KafkaProducer struct{}
+type RedisClient struct{}
+
+func (r *RedisClient) SetLiveStream(ctx context.Context, streamID, streamerID uuid.UUID) error { return nil }
+func (r *RedisClient) RemoveLiveStream(ctx context.Context, streamID uuid.UUID) error { return nil }
+func (r *RedisClient) AddViewer(ctx context.Context, streamID, viewerID uuid.UUID) error { return nil }
+func (r *RedisClient) RemoveViewer(ctx context.Context, streamID, viewerID uuid.UUID) error { return nil }
+func (r *RedisClient) PublishComment(ctx context.Context, streamID uuid.UUID, comment *model.StreamComment) error { return nil }
+func (r *RedisClient) PublishReaction(ctx context.Context, streamID uuid.UUID, reaction *model.StreamReaction) error { return nil }
+func (r *RedisClient) GetFollowerCount(ctx context.Context, userID uuid.UUID) (int, error) { return 0, fmt.Errorf("not implemented") }
+
+func (k *KafkaProducer) PublishStreamEvent(streamID, streamerID uuid.UUID, eventType string) {}
 
 type StreamingService struct {
 	streamRepo   *repository.StreamRepository
 	viewerRepo   *repository.ViewerRepository
 	commentRepo  *repository.CommentRepository
-	mediaGRPC    *MediaServiceClient // gRPC client for media service
+	mediaGRPC    *grpc.MediaServiceClient // gRPC client for media service
 	kafka        *KafkaProducer
 	redis        *RedisClient
 }
@@ -25,7 +40,7 @@ func NewStreamingService(
 	streamRepo *repository.StreamRepository,
 	viewerRepo *repository.ViewerRepository,
 	commentRepo *repository.CommentRepository,
-	mediaGRPC *MediaServiceClient,
+	mediaGRPC *grpc.MediaServiceClient,
 	kafka *KafkaProducer,
 	redis *RedisClient,
 ) *StreamingService {
@@ -425,6 +440,11 @@ func (s *StreamingService) saveRecording(streamID, streamerID uuid.UUID) {
 	
 	stream.RecordingURL = &recordingURL
 	s.streamRepo.Update(ctx, stream)
+}
+
+// GetStream - Get stream by ID
+func (s *StreamingService) GetStream(ctx context.Context, streamID uuid.UUID) (*model.LiveStream, error) {
+	return s.streamRepo.GetByID(ctx, streamID)
 }
 
 // GetLiveStreams - Get all live streams

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/entativa/vignette/creator-service/internal/model"
-	"github.com/entativa/vignette/creator-service/internal/service"
+	"vignette/creator-service/internal/model"
+	"vignette/creator-service/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )

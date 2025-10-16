@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/entativa/vignette/settings-service/internal/model"
+	"vignette/settings-service/internal/model"
 	"github.com/google/uuid"
 )
 

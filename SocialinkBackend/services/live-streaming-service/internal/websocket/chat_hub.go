@@ -5,7 +5,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/entativa/socialink/live-streaming-service/internal/model"
+	"socialink/live-streaming-service/internal/model"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
@@ -16,13 +16,13 @@ type ChatHub struct {
 	streams map[uuid.UUID]map[*Client]bool
 	
 	// Register requests
-	register chan *Client
+	Register chan *Client
 	
 	// Unregister requests
-	unregister chan *Client
+	Unregister chan *Client
 	
 	// Broadcast messages to stream
-	broadcast chan *BroadcastMessage
+	Broadcast chan *BroadcastMessage
 	
 	mu sync.RWMutex
 }
@@ -34,54 +34,54 @@ type BroadcastMessage struct {
 }
 
 type Client struct {
-	hub      *ChatHub
-	conn     *websocket.Conn
-	streamID uuid.UUID
-	userID   uuid.UUID
-	send     chan []byte
+	Hub      *ChatHub
+	Conn     *websocket.Conn
+	StreamID uuid.UUID
+	UserID   uuid.UUID
+	Send     chan []byte
 }
 
 func NewChatHub() *ChatHub {
 	return &ChatHub{
 		streams:    make(map[uuid.UUID]map[*Client]bool),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		broadcast:  make(chan *BroadcastMessage, 256),
+		Register:   make(chan *Client),
+		Unregister: make(chan *Client),
+		Broadcast:  make(chan *BroadcastMessage, 256),
 	}
 }
 
 func (h *ChatHub) Run() {
 	for {
 		select {
-		case client := <-h.register:
+		case client := <-h.Register:
 			h.mu.Lock()
-			if h.streams[client.streamID] == nil {
-				h.streams[client.streamID] = make(map[*Client]bool)
+			if h.streams[client.StreamID] == nil {
+				h.streams[client.StreamID] = make(map[*Client]bool)
 			}
-			h.streams[client.streamID][client] = true
+			h.streams[client.StreamID][client] = true
 			h.mu.Unlock()
 			
 			// Send viewer count update
-			h.broadcastViewerCount(client.streamID)
+			h.broadcastViewerCount(client.StreamID)
 		
-		case client := <-h.unregister:
+		case client := <-h.Unregister:
 			h.mu.Lock()
-			if clients, ok := h.streams[client.streamID]; ok {
+			if clients, ok := h.streams[client.StreamID]; ok {
 				if _, ok := clients[client]; ok {
 					delete(clients, client)
-					close(client.send)
+					close(client.Send)
 					
 					if len(clients) == 0 {
-						delete(h.streams, client.streamID)
+						delete(h.streams, client.StreamID)
 					}
 				}
 			}
 			h.mu.Unlock()
 			
 			// Send viewer count update
-			h.broadcastViewerCount(client.streamID)
+			h.broadcastViewerCount(client.StreamID)
 		
-		case message := <-h.broadcast:
+		case message := <-h.Broadcast:
 			h.mu.RLock()
 			clients := h.streams[message.StreamID]
 			h.mu.RUnlock()
@@ -96,10 +96,10 @@ func (h *ChatHub) Run() {
 			// Send to all clients in stream
 			for client := range clients {
 				select {
-				case client.send <- jsonData:
+				case client.Send <- jsonData:
 				default:
 					// Client buffer full, disconnect
-					close(client.send)
+					close(client.Send)
 					delete(clients, client)
 				}
 			}
@@ -108,7 +108,7 @@ func (h *ChatHub) Run() {
 }
 
 func (h *ChatHub) BroadcastComment(streamID uuid.UUID, comment *model.StreamComment) {
-	h.broadcast <- &BroadcastMessage{
+	h.Broadcast <- &BroadcastMessage{
 		StreamID: streamID,
 		Type:     "comment",
 		Data:     comment,
@@ -116,7 +116,7 @@ func (h *ChatHub) BroadcastComment(streamID uuid.UUID, comment *model.StreamComm
 }
 
 func (h *ChatHub) BroadcastReaction(streamID uuid.UUID, reaction *model.StreamReaction) {
-	h.broadcast <- &BroadcastMessage{
+	h.Broadcast <- &BroadcastMessage{
 		StreamID: streamID,
 		Type:     "reaction",
 		Data:     reaction,
@@ -128,7 +128,7 @@ func (h *ChatHub) broadcastViewerCount(streamID uuid.UUID) {
 	count := len(h.streams[streamID])
 	h.mu.RUnlock()
 	
-	h.broadcast <- &BroadcastMessage{
+	h.Broadcast <- &BroadcastMessage{
 		StreamID: streamID,
 		Type:     "viewer_update",
 		Data: map[string]interface{}{
@@ -143,38 +143,49 @@ func (h *ChatHub) GetViewerCount(streamID uuid.UUID) int {
 	return len(h.streams[streamID])
 }
 
+// NewClient creates a new WebSocket client
+func NewClient(hub *ChatHub, conn *websocket.Conn, streamID, userID uuid.UUID) *Client {
+	return &Client{
+		Hub:      hub,
+		Conn:     conn,
+		StreamID: streamID,
+		UserID:   userID,
+		Send:     make(chan []byte, 256),
+	}
+}
+
 // ReadPump pumps messages from WebSocket to hub
 func (c *Client) ReadPump() {
 	defer func() {
-		c.hub.unregister <- c
-		c.conn.Close()
+		c.Hub.Unregister <- c
+		c.Conn.Close()
 	}()
 
 	for {
-		_, message, err := c.conn.ReadMessage()
+		_, message, err := c.Conn.ReadMessage()
 		if err != nil {
 			break
 		}
 		
 		// In production: Parse message and handle
 		// (e.g., comment, reaction, etc.)
-		log.Printf("Received message from user %s: %s", c.userID, message)
+		log.Printf("Received message from user %s: %s", c.UserID, message)
 	}
 }
 
 // WritePump pumps messages from hub to WebSocket
 func (c *Client) WritePump() {
-	defer c.conn.Close()
+	defer c.Conn.Close()
 
 	for {
-		message, ok := <-c.send
+		message, ok := <-c.Send
 		if !ok {
 			// Hub closed the channel
-			c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+			c.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 			return
 		}
 
-		err := c.conn.WriteMessage(websocket.TextMessage, message)
+		err := c.Conn.WriteMessage(websocket.TextMessage, message)
 		if err != nil {
 			return
 		}

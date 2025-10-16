@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/entativa/vignette/creator-service/internal/handler"
-	"github.com/entativa/vignette/creator-service/internal/repository"
-	"github.com/entativa/vignette/creator-service/internal/service"
+	"vignette/creator-service/internal/handler"
+	"vignette/creator-service/internal/repository"
+	"vignette/creator-service/internal/service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"

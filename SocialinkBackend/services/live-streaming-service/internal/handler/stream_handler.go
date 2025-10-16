@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/entativa/socialink/live-streaming-service/internal/model"
-	"github.com/entativa/socialink/live-streaming-service/internal/service"
+	"socialink/live-streaming-service/internal/model"
+	"socialink/live-streaming-service/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )

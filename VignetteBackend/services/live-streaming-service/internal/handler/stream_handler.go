@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/entativa/vignette/live-streaming-service/internal/model"
-	"github.com/entativa/vignette/live-streaming-service/internal/service"
+	"vignette/live-streaming-service/internal/model"
+	"vignette/live-streaming-service/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )

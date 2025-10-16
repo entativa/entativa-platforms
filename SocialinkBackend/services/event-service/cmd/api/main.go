@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/entativa/socialink/event-service/internal/handler"
-	"github.com/entativa/socialink/event-service/internal/repository"
-	"github.com/entativa/socialink/event-service/internal/service"
+	"socialink/event-service/internal/handler"
+	"socialink/event-service/internal/repository"
+	"socialink/event-service/internal/service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"

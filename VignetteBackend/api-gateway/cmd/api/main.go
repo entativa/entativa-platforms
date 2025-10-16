@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	grpcclient "github.com/entativa/vignette/api-gateway/internal/grpc"
-	"github.com/entativa/vignette/api-gateway/internal/middleware"
+	grpcclient "vignette/api-gateway/internal/grpc"
+	"vignette/api-gateway/internal/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"

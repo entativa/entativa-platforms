@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/entativa/vignette/creator-service/internal/model"
-	"github.com/entativa/vignette/creator-service/internal/repository"
+	"vignette/creator-service/internal/model"
+	"vignette/creator-service/internal/repository"
 	"github.com/google/uuid"
 )
 

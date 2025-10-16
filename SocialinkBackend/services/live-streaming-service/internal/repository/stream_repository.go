@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/entativa/socialink/live-streaming-service/internal/model"
+	"socialink/live-streaming-service/internal/model"
 	"github.com/google/uuid"
 )
 

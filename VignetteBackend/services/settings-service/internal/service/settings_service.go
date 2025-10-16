@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/entativa/vignette/settings-service/internal/crypto"
-	"github.com/entativa/vignette/settings-service/internal/model"
-	"github.com/entativa/vignette/settings-service/internal/repository"
+	"vignette/settings-service/internal/crypto"
+	"vignette/settings-service/internal/model"
+	"vignette/settings-service/internal/repository"
 	"github.com/google/uuid"
 )
 

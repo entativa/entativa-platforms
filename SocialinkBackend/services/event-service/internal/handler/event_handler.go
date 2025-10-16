@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/entativa/socialink/event-service/internal/model"
-	"github.com/entativa/socialink/event-service/internal/service"
+	"socialink/event-service/internal/model"
+	"socialink/event-service/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )

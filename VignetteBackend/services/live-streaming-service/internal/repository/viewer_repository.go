@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/entativa/vignette/live-streaming-service/internal/model"
+	"vignette/live-streaming-service/internal/model"
 	"github.com/google/uuid"
 )
 

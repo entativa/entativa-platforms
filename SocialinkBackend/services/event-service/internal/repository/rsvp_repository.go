@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/entativa/socialink/event-service/internal/model"
+	"socialink/event-service/internal/model"
 	"github.com/google/uuid"
 )
 

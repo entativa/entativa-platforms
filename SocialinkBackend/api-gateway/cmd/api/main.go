@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	grpcclient "github.com/entativa/socialink/api-gateway/internal/grpc"
-	"github.com/entativa/socialink/api-gateway/internal/middleware"
+	grpcclient "socialink/api-gateway/internal/grpc"
+	"socialink/api-gateway/internal/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"

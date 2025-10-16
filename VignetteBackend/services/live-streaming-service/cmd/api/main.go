@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/entativa/vignette/live-streaming-service/internal/handler"
-	mediagrpc "github.com/entativa/vignette/live-streaming-service/internal/grpc"
-	"github.com/entativa/vignette/live-streaming-service/internal/repository"
-	"github.com/entativa/vignette/live-streaming-service/internal/service"
-	"github.com/entativa/vignette/live-streaming-service/internal/websocket"
+	"vignette/live-streaming-service/internal/handler"
+	mediagrpc "vignette/live-streaming-service/internal/grpc"
+	"vignette/live-streaming-service/internal/repository"
+	"vignette/live-streaming-service/internal/service"
+	"vignette/live-streaming-service/internal/websocket"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -123,14 +123,9 @@ func main() {
 			return
 		}
 
-		client := &websocket.Client{
-			conn:     conn,
-			streamID: streamID,
-			userID:   userID,
-			send:     make(chan []byte, 256),
-		}
+		client := websocket.NewClient(chatHub, conn, streamID, userID)
 
-		chatHub.register <- client
+		chatHub.Register <- client
 
 		go client.WritePump()
 		go client.ReadPump()

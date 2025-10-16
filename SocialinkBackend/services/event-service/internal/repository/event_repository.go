@@ -4,9 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strings"
 
-	"github.com/entativa/socialink/event-service/internal/model"
+	"socialink/event-service/internal/model"
 	"github.com/google/uuid"
 )
 

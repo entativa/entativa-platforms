@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/entativa/vignette/settings-service/internal/model"
-	"github.com/entativa/vignette/settings-service/internal/service"
+	"vignette/settings-service/internal/model"
+	"vignette/settings-service/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
