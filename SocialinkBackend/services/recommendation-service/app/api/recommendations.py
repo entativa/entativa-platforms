@@ -1,0 +1,147 @@
+"""
+Recommendation API endpoints for Socialink
+"""
+from fastapi import APIRouter, Depends, Query, HTTPException
+from typing import Optional, List
+
+from app.models.recommendation import (
+    RecommendationType, RecommendationRequest, RecommendationResponse,
+    RecommendationFeedback
+)
+from app.services.recommendation_service import RecommendationService
+
+
+router = APIRouter(prefix="/recommendations", tags=["recommendations"])
+
+
+@router.get("/friends", response_model=RecommendationResponse)
+async def get_friend_suggestions(
+    user_id: str = Query(..., description="User ID"),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    exclude_ids: Optional[str] = Query(default=None, description="Comma-separated IDs to exclude"),
+    # service: RecommendationService = Depends(get_recommendation_service)
+):
+    """
+    Get friend suggestions (Friends Suggestions)
+    
+    Returns friend suggestions based on:
+    - Friends of friends (highest priority)
+    - Mutual connections
+    - Similar social circles
+    - Same location/school/workplace
+    """
+    exclude_list = exclude_ids.split(",") if exclude_ids else []
+    
+    request = RecommendationRequest(
+        user_id=user_id,
+        type=RecommendationType.FRIENDS_SUGGESTIONS,
+        limit=limit,
+        offset=offset,
+        exclude_ids=exclude_list
+    )
+    
+    # In production: Use actual service
+    # return await service.get_recommendations(request)
+    
+    return RecommendationResponse(
+        type=RecommendationType.FRIENDS_SUGGESTIONS,
+        users=[],
+        next_offset=offset + limit,
+        has_more=False
+    )
+
+
+@router.get("/people", response_model=RecommendationResponse)
+async def get_people_you_may_know(
+    user_id: str = Query(..., description="User ID"),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    exclude_ids: Optional[str] = Query(default=None),
+    # service: RecommendationService = Depends(get_recommendation_service)
+):
+    """
+    Get people you may know (People You May Know)
+    
+    Returns broader network recommendations based on:
+    - Extended network (2-3 degrees)
+    - Similar interests
+    - Same communities
+    - Popular accounts
+    """
+    exclude_list = exclude_ids.split(",") if exclude_ids else []
+    
+    request = RecommendationRequest(
+        user_id=user_id,
+        type=RecommendationType.PEOPLE_YOU_MAY_KNOW,
+        limit=limit,
+        offset=offset,
+        exclude_ids=exclude_list
+    )
+    
+    return RecommendationResponse(
+        type=RecommendationType.PEOPLE_YOU_MAY_KNOW,
+        users=[],
+        next_offset=offset + limit,
+        has_more=False
+    )
+
+
+@router.get("/communities", response_model=RecommendationResponse)
+async def get_community_recommendations(
+    user_id: str = Query(..., description="User ID"),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    categories: Optional[str] = Query(default=None, description="Comma-separated categories"),
+    exclude_ids: Optional[str] = Query(default=None),
+    # service: RecommendationService = Depends(get_recommendation_service)
+):
+    """
+    Get community recommendations (Communities for You)
+    
+    Returns community recommendations based on:
+    - Communities friends are in
+    - Communities matching interests
+    - Popular communities
+    """
+    exclude_list = exclude_ids.split(",") if exclude_ids else []
+    category_list = categories.split(",") if categories else None
+    
+    request = RecommendationRequest(
+        user_id=user_id,
+        type=RecommendationType.COMMUNITIES_FOR_YOU,
+        limit=limit,
+        offset=offset,
+        exclude_ids=exclude_list,
+        categories=category_list
+    )
+    
+    return RecommendationResponse(
+        type=RecommendationType.COMMUNITIES_FOR_YOU,
+        communities=[],
+        next_offset=offset + limit,
+        has_more=False
+    )
+
+
+@router.post("/feedback")
+async def submit_feedback(
+    feedback: RecommendationFeedback,
+    # service: RecommendationService = Depends(get_recommendation_service)
+):
+    """
+    Submit feedback on recommendations
+    
+    Helps improve future recommendations by tracking:
+    - Which recommendations were followed/dismissed
+    - Position in the list
+    - Source of recommendation
+    """
+    # In production: Store feedback for model training
+    return {"status": "success", "message": "Feedback recorded"}
+
+
+@router.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {"status": "healthy", "service": "socialink-recommendation-service"}

@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package vignette.user;
+
+option go_package = "github.com/entativa/vignette/proto/user";
+
+// User Service - Profile management, authentication
+service UserService {
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse);
+  rpc UpdateUserProfile(UpdateUserProfileRequest) returns (UpdateUserProfileResponse);
+  rpc FollowUser(FollowUserRequest) returns (FollowUserResponse);
+  rpc UnfollowUser(UnfollowUserRequest) returns (UnfollowUserResponse);
+  rpc GetFollowers(GetFollowersRequest) returns (GetFollowersResponse);
+  rpc GetFollowing(GetFollowingRequest) returns (GetFollowingResponse);
+  rpc GetFollowStats(GetFollowStatsRequest) returns (GetFollowStatsResponse);
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUserResponse {
+  string user_id = 1;
+  string username = 2;
+  string email = 3;
+  string display_name = 4;
+  string bio = 5;
+  string profile_photo = 6;
+  int32 followers_count = 7;
+  int32 following_count = 8;
+}
+
+message UpdateUserRequest {
+  string user_id = 1;
+  optional string display_name = 2;
+  optional string bio = 3;
+  optional string profile_photo = 4;
+}
+
+message UpdateUserResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetUserProfileRequest {
+  string user_id = 1;
+}
+
+message GetUserProfileResponse {
+  string user_id = 1;
+  string username = 2;
+  string display_name = 3;
+  string bio = 4;
+  string profile_photo = 5;
+  int32 posts_count = 6;
+  int32 followers_count = 7;
+  int32 following_count = 8;
+}
+
+message UpdateUserProfileRequest {
+  string user_id = 1;
+  optional string display_name = 2;
+  optional string bio = 3;
+}
+
+message UpdateUserProfileResponse {
+  bool success = 1;
+}
+
+message FollowUserRequest {
+  string follower_id = 1;
+  string following_id = 2;
+}
+
+message FollowUserResponse {
+  bool success = 1;
+}
+
+message UnfollowUserRequest {
+  string follower_id = 1;
+  string following_id = 2;
+}
+
+message UnfollowUserResponse {
+  bool success = 1;
+}
+
+message GetFollowersRequest {
+  string user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message GetFollowersResponse {
+  repeated string follower_ids = 1;
+  int32 total = 2;
+}
+
+message GetFollowingRequest {
+  string user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message GetFollowingResponse {
+  repeated string following_ids = 1;
+  int32 total = 2;
+}
+
+message GetFollowStatsRequest {
+  string user_id = 1;
+}
+
+message GetFollowStatsResponse {
+  int32 followers_count = 1;
+  int32 following_count = 2;
+}

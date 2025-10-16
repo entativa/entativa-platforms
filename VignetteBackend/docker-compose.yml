@@ -1,0 +1,510 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # DATABASES
+  # ============================================
+  
+  postgres:
+    image: postgres:15-alpine
+    container_name: vignette-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vignette
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
+    networks:
+      - vignette-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-postgis:
+    image: postgis/postgis:15-3.3-alpine
+    container_name: vignette-postgres-postgis
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vignette_postgis
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_postgis_data:/var/lib/postgresql/data
+    networks:
+      - vignette-network
+
+  mongodb:
+    image: mongo:7.0
+    container_name: vignette-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - vignette-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: vignette-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - vignette-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: vignette-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - vignette-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ============================================
+  # MESSAGE QUEUE
+  # ============================================
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: vignette-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - vignette-network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: vignette-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - vignette-network
+
+  # ============================================
+  # API GATEWAY
+  # ============================================
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: vignette-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      USER_SERVICE_GRPC: user-service:50001
+      POST_SERVICE_GRPC: post-service:50002
+      MESSAGING_SERVICE_GRPC: messaging-service:50003
+      SETTINGS_SERVICE_GRPC: settings-service:50004
+      MEDIA_SERVICE_GRPC: media-service:50051
+      STORY_SERVICE_GRPC: story-service:50005
+      SEARCH_SERVICE_GRPC: search-service:50006
+      NOTIFICATION_SERVICE_GRPC: notification-service:50007
+      FEED_SERVICE_GRPC: feed-service:50008
+      COMMUNITY_SERVICE_GRPC: community-service:50009
+      RECOMMENDATION_SERVICE_GRPC: recommendation-service:50010
+      STREAMING_SERVICE_GRPC: streaming-service:50011
+      CREATOR_SERVICE_GRPC: creator-service:50012
+    depends_on:
+      - user-service
+      - post-service
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  # ============================================
+  # MICROSERVICES (Go)
+  # ============================================
+
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    container_name: vignette-user-service
+    ports:
+      - "8083:8083"
+      - "50001:50001"
+    environment:
+      PORT: 8083
+      GRPC_PORT: 50001
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/vignette_users?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+      KAFKA_BROKERS: kafka:29092
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  post-service:
+    build:
+      context: ./services/posting-service
+      dockerfile: Dockerfile
+    container_name: vignette-post-service
+    ports:
+      - "8084:8084"
+      - "50002:50002"
+    environment:
+      PORT: 8084
+      GRPC_PORT: 50002
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/vignette_posts?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+      KAFKA_BROKERS: kafka:29092
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  community-service:
+    build:
+      context: ./services/community-service
+      dockerfile: Dockerfile
+    container_name: vignette-community-service
+    ports:
+      - "8093:8093"
+      - "50009:50009"
+    environment:
+      PORT: 8093
+      GRPC_PORT: 50009
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/vignette_communities?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+      KAFKA_BROKERS: kafka:29092
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  search-service:
+    build:
+      context: ./services/search-service
+      dockerfile: Dockerfile
+    container_name: vignette-search-service
+    ports:
+      - "8089:8089"
+      - "50006:50006"
+    environment:
+      PORT: 8089
+      GRPC_PORT: 50006
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - elasticsearch
+      - redis
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  streaming-service:
+    build:
+      context: ./services/live-streaming-service
+      dockerfile: Dockerfile
+    container_name: vignette-streaming-service
+    ports:
+      - "8097:8097"
+      - "50011:50011"
+    environment:
+      PORT: 8097
+      GRPC_PORT: 50011
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/vignette_streaming?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  creator-service:
+    build:
+      context: ./services/creator-service
+      dockerfile: Dockerfile
+    container_name: vignette-creator-service
+    ports:
+      - "8100:8100"
+      - "50012:50012"
+    environment:
+      PORT: 8100
+      GRPC_PORT: 50012
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/vignette_creator?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  settings-service:
+    build:
+      context: ./services/settings-service
+      dockerfile: Dockerfile
+    container_name: vignette-settings-service
+    ports:
+      - "8101:8101"
+      - "50004:50004"
+    environment:
+      PORT: 8101
+      GRPC_PORT: 50004
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/vignette_settings?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  # ============================================
+  # MICROSERVICES (Rust)
+  # ============================================
+
+  messaging-service:
+    build:
+      context: ./services/messaging-service
+      dockerfile: Dockerfile
+    container_name: vignette-messaging-service
+    ports:
+      - "8091:8091"
+      - "50003:50003"
+    environment:
+      PORT: 8091
+      GRPC_PORT: 50003
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/vignette_messaging?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  media-service:
+    build:
+      context: ./services/media-service
+      dockerfile: Dockerfile
+    container_name: vignette-media-service
+    ports:
+      - "8087:8087"
+      - "50051:50051"
+    environment:
+      PORT: 8087
+      GRPC_PORT: 50051
+      STORAGE_TYPE: local
+      STORAGE_PATH: /var/media
+    volumes:
+      - media_storage:/var/media
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  # ============================================
+  # MICROSERVICES (Scala)
+  # ============================================
+
+  story-service:
+    build:
+      context: ./services/story-service
+      dockerfile: Dockerfile
+    container_name: vignette-story-service
+    ports:
+      - "8090:8090"
+      - "50005:50005"
+    environment:
+      PORT: 8090
+      GRPC_PORT: 50005
+      MONGODB_URI: mongodb://mongo:mongo@mongodb:27017
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    container_name: vignette-notification-service
+    ports:
+      - "8088:8088"
+      - "50007:50007"
+    environment:
+      PORT: 8088
+      GRPC_PORT: 50007
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/vignette_notifications?sslmode=disable
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  # ============================================
+  # MICROSERVICES (Python)
+  # ============================================
+
+  feed-service:
+    build:
+      context: ./services/feed-service
+      dockerfile: Dockerfile
+    container_name: vignette-feed-service
+    ports:
+      - "8085:8085"
+      - "50008:50008"
+    environment:
+      PORT: 8085
+      GRPC_PORT: 50008
+      MONGODB_URI: mongodb://mongo:mongo@mongodb:27017
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  recommendation-service:
+    build:
+      context: ./services/recommendation-service
+      dockerfile: Dockerfile
+    container_name: vignette-recommendation-service
+    ports:
+      - "8095:8095"
+      - "50010:50010"
+    environment:
+      PORT: 8095
+      GRPC_PORT: 50010
+      MONGODB_URI: mongodb://mongo:mongo@mongodb:27017
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  # ============================================
+  # MONITORING & OBSERVABILITY
+  # ============================================
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: vignette-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: vignette-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana-dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+  # ============================================
+  # REVERSE PROXY
+  # ============================================
+
+  nginx:
+    image: nginx:alpine
+    container_name: vignette-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./infrastructure/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - api-gateway
+    networks:
+      - vignette-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  postgres_postgis_data:
+  mongodb_data:
+  redis_data:
+  elasticsearch_data:
+  media_storage:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  vignette-network:
+    driver: bridge

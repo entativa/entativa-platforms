@@ -1,0 +1,54 @@
+# Vignette Feed Service - Requirements
+# High-performance feed recommendation system
+
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# Database
+motor==3.3.2
+pymongo==4.6.1
+redis[hiredis]==5.0.1
+asyncpg==0.29.0
+
+# HTTP & Async
+httpx==0.26.0
+aiohttp==3.9.1
+aiocache==0.12.2
+
+# ML & Recommendations
+numpy==1.26.3
+scipy==1.11.4
+scikit-learn==1.4.0
+pandas==2.1.4
+
+# Feature Engineering
+haversine==2.8.1  # Geo-distance calculations
+python-dateutil==2.8.2
+
+# Caching & Performance
+orjson==3.9.10
+msgpack==1.0.7
+
+# Monitoring
+prometheus-client==0.19.0
+
+# Auth & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+pyjwt==2.8.0
+
+# gRPC Integration
+grpcio==1.60.0
+grpcio-tools==1.60.0
+protobuf==4.25.2
+
+# Kafka
+aiokafka==0.10.0
+
+# Utilities
+python-dotenv==1.0.0
+python-multipart==0.0.6
+pytz==2023.3

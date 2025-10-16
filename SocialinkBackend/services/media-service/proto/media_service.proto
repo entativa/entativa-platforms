@@ -1,0 +1,219 @@
+syntax = "proto3";
+
+package media;
+
+option go_package = "socialink/media-service/proto";
+
+// MediaService provides gRPC endpoints for media operations
+service MediaService {
+  // Upload media file
+  rpc UploadMedia(UploadMediaRequest) returns (UploadMediaResponse);
+  
+  // Upload media in chunks (for large files)
+  rpc UploadMediaStream(stream UploadChunk) returns (UploadMediaResponse);
+  
+  // Get media information
+  rpc GetMedia(GetMediaRequest) returns (MediaResponse);
+  
+  // Delete media
+  rpc DeleteMedia(DeleteMediaRequest) returns (DeleteMediaResponse);
+  
+  // Process media (resize, crop, etc.)
+  rpc ProcessMedia(ProcessMediaRequest) returns (ProcessMediaResponse);
+  
+  // Get signed URL for direct download
+  rpc GetSignedUrl(GetSignedUrlRequest) returns (GetSignedUrlResponse);
+  
+  // Batch operations
+  rpc BatchGetMedia(BatchGetMediaRequest) returns (BatchGetMediaResponse);
+  rpc BatchDeleteMedia(BatchDeleteMediaRequest) returns (BatchDeleteMediaResponse);
+}
+
+// Upload request
+message UploadMediaRequest {
+  bytes data = 1;
+  string filename = 2;
+  string content_type = 3;
+  string user_id = 4;
+  MediaPurpose purpose = 5;
+  ProcessingOptions processing_options = 6;
+}
+
+// Chunked upload
+message UploadChunk {
+  string upload_id = 1;
+  int32 chunk_number = 2;
+  bytes data = 3;
+  bool is_last_chunk = 4;
+  string filename = 5;
+  string content_type = 6;
+  string user_id = 7;
+  MediaPurpose purpose = 8;
+}
+
+// Upload response
+message UploadMediaResponse {
+  string media_id = 1;
+  string url = 2;
+  string thumbnail_url = 3;
+  int32 width = 4;
+  int32 height = 5;
+  int64 file_size = 6;
+  string mime_type = 7;
+  MediaType media_type = 8;
+  ProcessingStatus processing_status = 9;
+  string blurhash = 10;
+}
+
+// Get media request
+message GetMediaRequest {
+  string media_id = 1;
+}
+
+// Delete media request
+message DeleteMediaRequest {
+  string media_id = 1;
+  string user_id = 2;
+}
+
+// Delete response
+message DeleteMediaResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Media response
+message MediaResponse {
+  string id = 1;
+  string user_id = 2;
+  string filename = 3;
+  string original_filename = 4;
+  string mime_type = 5;
+  MediaType media_type = 6;
+  int64 file_size = 7;
+  string url = 8;
+  string cdn_url = 9;
+  string thumbnail_url = 10;
+  int32 width = 11;
+  int32 height = 12;
+  double duration = 13;
+  string hash = 14;
+  string blurhash = 15;
+  ProcessingStatus processing_status = 16;
+  bool is_processed = 17;
+  bool is_public = 18;
+  string created_at = 19;
+  string updated_at = 20;
+}
+
+// Process media request
+message ProcessMediaRequest {
+  string media_id = 1;
+  string user_id = 2;
+  repeated ProcessingOperation operations = 3;
+}
+
+// Processing operation
+message ProcessingOperation {
+  OperationType type = 1;
+  map<string, string> parameters = 2;
+}
+
+// Operation types
+enum OperationType {
+  RESIZE = 0;
+  CROP = 1;
+  ROTATE = 2;
+  FLIP = 3;
+  COMPRESS = 4;
+  FILTER = 5;
+  WATERMARK = 6;
+}
+
+// Process response
+message ProcessMediaResponse {
+  bool success = 1;
+  string media_id = 2;
+  string processed_url = 3;
+  string message = 4;
+}
+
+// Get signed URL request
+message GetSignedUrlRequest {
+  string media_id = 1;
+  int32 expiry_seconds = 2;
+}
+
+// Signed URL response
+message GetSignedUrlResponse {
+  string signed_url = 1;
+  int64 expires_at = 2;
+}
+
+// Batch get request
+message BatchGetMediaRequest {
+  repeated string media_ids = 1;
+}
+
+// Batch get response
+message BatchGetMediaResponse {
+  repeated MediaResponse media = 1;
+}
+
+// Batch delete request
+message BatchDeleteMediaRequest {
+  repeated string media_ids = 1;
+  string user_id = 2;
+}
+
+// Batch delete response
+message BatchDeleteMediaResponse {
+  int32 deleted_count = 1;
+  repeated string failed_ids = 2;
+}
+
+// Processing options
+message ProcessingOptions {
+  bool generate_thumbnails = 1;
+  repeated ThumbnailSize thumbnail_sizes = 2;
+  bool generate_blurhash = 3;
+  int32 max_width = 4;
+  int32 max_height = 5;
+  int32 quality = 6;
+}
+
+// Thumbnail size
+message ThumbnailSize {
+  string name = 1;
+  int32 width = 2;
+  int32 height = 3;
+}
+
+// Media type enum
+enum MediaType {
+  UNKNOWN = 0;
+  IMAGE = 1;
+  VIDEO = 2;
+  AUDIO = 3;
+  DOCUMENT = 4;
+}
+
+// Media purpose enum (for categorization)
+enum MediaPurpose {
+  GENERAL = 0;
+  PROFILE_PICTURE = 1;
+  COVER_PHOTO = 2;
+  POST_ATTACHMENT = 3;
+  MESSAGE_ATTACHMENT = 4;
+  STORY = 5;
+  AVATAR = 6;
+}
+
+// Processing status enum
+enum ProcessingStatus {
+  PENDING = 0;
+  PROCESSING = 1;
+  COMPLETED = 2;
+  FAILED = 3;
+  CANCELLED = 4;
+}
