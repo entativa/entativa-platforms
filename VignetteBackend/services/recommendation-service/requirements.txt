@@ -1,0 +1,46 @@
+# Vignette Recommendation Service - ML-Powered Recommendations
+
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# Database
+motor==3.3.2
+pymongo==4.6.1
+redis[hiredis]==5.0.1
+asyncpg==0.29.0
+
+# ML & Data Science
+numpy==1.26.3
+scipy==1.11.4
+scikit-learn==1.4.0
+pandas==2.1.4
+
+# Graph Algorithms
+networkx==3.2.1
+python-louvain==0.16  # Community detection
+
+# Embeddings & Vector Search
+sentence-transformers==2.3.1
+faiss-cpu==1.7.4  # Vector similarity search
+
+# HTTP & Async
+httpx==0.26.0
+aiohttp==3.9.1
+
+# Feature Engineering
+category-encoders==2.6.3
+
+# Caching
+aiocache==0.12.2
+orjson==3.9.10
+
+# Monitoring
+prometheus-client==0.19.0
+
+# Utilities
+python-dotenv==1.0.0
+python-dateutil==2.8.2
+pytz==2023.3
