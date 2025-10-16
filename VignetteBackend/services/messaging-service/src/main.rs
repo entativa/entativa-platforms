@@ -120,6 +120,34 @@ async fn main() -> std::io::Result<()> {
                             .route("/{group_id}", web::get().to(handlers::group_handler::get_group_info))
                             .route("/{group_id}/members", web::get().to(handlers::group_handler::get_group_members))
                     )
+                    // Presence
+                    .service(
+                        web::scope("/presence")
+                            .route("/online/{user_id}", web::put().to(handlers::presence_handler::set_online))
+                            .route("/offline/{user_id}", web::put().to(handlers::presence_handler::set_offline))
+                            .route("/status/{user_id}", web::put().to(handlers::presence_handler::set_custom_status))
+                            .route("/{user_id}", web::get().to(handlers::presence_handler::get_presence))
+                            .route("/bulk", web::post().to(handlers::presence_handler::get_bulk_presence))
+                            .route("/online-count", web::get().to(handlers::presence_handler::get_online_count))
+                    )
+                    // Typing
+                    .service(
+                        web::scope("/typing")
+                            .route("/{conversation_id}/{user_id}", web::put().to(handlers::typing_handler::set_typing))
+                            .route("/{conversation_id}/{user_id}", web::delete().to(handlers::typing_handler::clear_typing))
+                            .route("/{conversation_id}", web::get().to(handlers::typing_handler::get_typing_users))
+                    )
+                    // Calls
+                    .service(
+                        web::scope("/calls")
+                            .route("/initiate/{caller_id}", web::post().to(handlers::call_handler::initiate_call))
+                            .route("/{call_id}/answer/{user_id}", web::put().to(handlers::call_handler::answer_call))
+                            .route("/{call_id}/decline/{user_id}", web::put().to(handlers::call_handler::decline_call))
+                            .route("/{call_id}/end/{user_id}", web::put().to(handlers::call_handler::end_call))
+                            .route("/{call_id}/ice/{user_id}", web::post().to(handlers::call_handler::add_ice_candidate))
+                            .route("/{call_id}/ice", web::get().to(handlers::call_handler::get_ice_candidates))
+                            .route("/history/{conversation_id}", web::get().to(handlers::call_handler::get_call_history))
+                    )
             )
             
             // WebSocket
@@ -154,12 +182,19 @@ async fn root() -> HttpResponse {
             "Real-time WebSocket delivery",
             "Read receipts",
             "Self-destructing messages",
-            "Multi-device support"
+            "Multi-device support",
+            "Presence tracking (online/offline)",
+            "Typing indicators",
+            "Audio/video calls with WebRTC",
+            "ICE candidate exchange"
         ],
         "endpoints": {
             "keys": "/api/v1/keys/*",
             "messages": "/api/v1/messages/*",
             "groups": "/api/v1/groups/*",
+            "presence": "/api/v1/presence/*",
+            "typing": "/api/v1/typing/*",
+            "calls": "/api/v1/calls/*",
             "websocket": "/ws/{user_id}/{device_id}"
         },
         "documentation": "https://docs.vignette.com/messaging"
