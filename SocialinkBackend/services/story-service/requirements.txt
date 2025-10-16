@@ -1,0 +1,47 @@
+# FastAPI and server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Database
+motor==3.3.2  # Async MongoDB driver
+pymongo==4.6.0
+redis==5.0.1
+aioredis==2.0.1
+
+# Validation
+pydantic==2.5.0
+pydantic-settings==2.1.0
+email-validator==2.1.0
+
+# Authentication
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+pyjwt==2.8.0
+
+# gRPC for media service integration
+grpcio==1.59.0
+grpcio-tools==1.59.0
+protobuf==4.25.0
+
+# Async HTTP client
+httpx==0.25.1
+aiohttp==3.9.1
+
+# Utilities
+python-dateutil==2.8.2
+pytz==2023.3
+pendulum==3.0.0
+
+# Monitoring
+prometheus-client==0.19.0
+
+# Task scheduling
+apscheduler==3.10.4
+celery==5.3.4
+
+# Image/video processing
+pillow==10.1.0
+
+# Environment
+python-dotenv==1.0.0
