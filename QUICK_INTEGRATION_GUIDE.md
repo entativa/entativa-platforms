@@ -4,9 +4,9 @@
 
 ### Step 1: Run Database Migrations
 
-**Socialink**:
+**Entativa**:
 ```bash
-psql -U postgres -d socialink_db -f SocialinkBackend/services/user-service/migrations/003_create_profiles_table.up.sql
+psql -U postgres -d entativa_db -f EntativaBackend/services/user-service/migrations/003_create_profiles_table.up.sql
 ```
 
 **Vignette**:
@@ -38,7 +38,7 @@ profile.Use(authMiddleware.RequireAuth()) // Your existing auth middleware
     profile.GET("/me", profileHandler.GetMyProfile)
     profile.GET("/:user_id", profileHandler.GetProfile)
     
-    // Socialink-specific
+    // Entativa-specific
     profile.PUT("/info", profileHandler.UpdateProfileInfo)          // Basic info
     profile.POST("/work", profileHandler.AddWorkExperience)         // Add work
     profile.DELETE("/work/:work_id", profileHandler.RemoveWorkExperience)
@@ -73,7 +73,7 @@ curl http://localhost:8080/profile/me \
 
 ## 📋 Complete Route List
 
-### Socialink Routes
+### Entativa Routes
 ```
 GET    /profile/me
 GET    /profile/:user_id

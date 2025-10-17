@@ -498,14 +498,14 @@ id3 = "1.12"               # NOW USED - MP3 tags
 
 ### Before Upgrade
 ```
-Socialink:  4,804 lines
+Entativa:  4,804 lines
 Vignette:   5,652 lines
 Total:      10,456 lines
 ```
 
 ### After Upgrade
 ```
-Socialink:  5,100+ lines  (+300 lines of production code)
+Entativa:  5,100+ lines  (+300 lines of production code)
 Vignette:   6,200+ lines  (+550 lines of production code)
 Total:      11,300+ lines (+850 lines, all production-grade)
 ```

@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-I've implemented comprehensive, enterprise-grade media services for both **Socialink** and **Vignette** platforms using **Rust** with **Actix-web**. This is a production-ready, PhD-level implementation with advanced features including multi-cloud storage, sophisticated image/video processing, and streaming capabilities.
+I've implemented comprehensive, enterprise-grade media services for both **Entativa** and **Vignette** platforms using **Rust** with **Actix-web**. This is a production-ready, PhD-level implementation with advanced features including multi-cloud storage, sophisticated image/video processing, and streaming capabilities.
 
 ## What Has Been Fully Implemented
 
@@ -198,7 +198,7 @@ Upload Request
 
 ## Files Structure
 
-### Socialink Media Service
+### Entativa Media Service
 ```
 src/
 ├── main.rs                     ✅ 300 lines - Full server implementation
@@ -237,7 +237,7 @@ src/
 ### Vignette Media Service
 ```
 src/
-├── [Same structure as Socialink]
+├── [Same structure as Entativa]
 └── services/
     ├── filter_service.rs       ⏳ Instagram-style filters
     └── ar_filter_service.rs    ⏳ AR filters (face tracking)

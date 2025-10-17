@@ -8,7 +8,7 @@
 
 ## 📊 What Was Built
 
-### **Socialink Post Service** (Facebook-like)
+### **Entativa Post Service** (Facebook-like)
 - ✅ Posts with text + multiple media
 - ✅ Facebook-style reactions (7 types)
 - ✅ Nested comments (infinite depth)
@@ -112,7 +112,7 @@ All Takes link back to Alice
 
 ## 📁 File Structure
 
-### Socialink Post Service (31 files)
+### Entativa Post Service (31 files)
 ```
 post-service/
 ├── cmd/api/main.go                     ✅
@@ -204,7 +204,7 @@ Same structure PLUS:
 9. **saves** - Bookmark feature
 
 ### Total Tables
-- Socialink: **8 tables**
+- Entativa: **8 tables**
 - Vignette: **9 tables**
 
 ---

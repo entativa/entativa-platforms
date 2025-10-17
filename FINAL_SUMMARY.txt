@@ -1,6 +1,6 @@
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                                                                              ║
-║              🎊 SOCIALINK & VIGNETTE - FINAL IMPLEMENTATION 🎊               ║
+║              🎊 ENTATIVA & VIGNETTE - FINAL IMPLEMENTATION 🎊               ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
@@ -27,13 +27,13 @@ PERFORMANCE & SCALE
 
 MEDIA & STORAGE
   ✅ Profile picture upload (S3/MinIO)
-  ✅ Cover photo upload (Socialink)
+  ✅ Cover photo upload (Entativa)
   ✅ CDN support
 
-SOCIALINK SPECIAL FEATURES
+ENTATIVA SPECIAL FEATURES
   ✅ Relaxed name policy (vs Facebook's strict policy)
   ✅ Clean username generation (firstname.lastname)
-  ✅ Profile URLs: socialink.com/john.doe
+  ✅ Profile URLs: entativa.com/john.doe
   ✅ International character support
   ✅ Friendly name recommendations (non-blocking)
   ✅ Display names shown (not usernames)
@@ -63,64 +63,64 @@ NEW: Test Scripts       3 test files
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🆚 SOCIALINK VS FACEBOOK
+🆚 ENTATIVA VS FACEBOOK
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Name Policy:
   Facebook: Must use legal name (strict enforcement)
-  Socialink: Any name allowed (relaxed, recommended)
+  Entativa: Any name allowed (relaxed, recommended)
 
 Validation:
   Facebook: Government ID verification
-  Socialink: Never requires verification
+  Entativa: Never requires verification
 
 Account Suspension:
   Facebook: Yes, for "fake names"
-  Socialink: Never for names
+  Entativa: Never for names
 
 Name Changes:
   Facebook: Limited, requires review
-  Socialink: Unlimited, instant
+  Entativa: Unlimited, instant
 
 User Experience:
   Facebook: john.michael.smith.247
-  Socialink: john.doe (clean!)
+  Entativa: john.doe (clean!)
 
 Profile URLs:
   Facebook: facebook.com/john.michael.smith.247
-  Socialink: socialink.com/john.doe
+  Entativa: entativa.com/john.doe
 
 Cultural Support:
   Facebook: Western-biased
-  Socialink: Fully global, Unicode
+  Entativa: Fully global, Unicode
 
 Privacy:
   Facebook: Must expose legal name
-  Socialink: Use safe identity
+  Entativa: Use safe identity
 
 LGBTQ+ Support:
   Facebook: Forced deadnames
-  Socialink: Chosen names allowed
+  Entativa: Chosen names allowed
 
 Artists/Creators:
   Facebook: Must use legal name
-  Socialink: Stage names welcome
+  Entativa: Stage names welcome
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🎯 SOCIALINK USERNAME EXAMPLES
+🎯 ENTATIVA USERNAME EXAMPLES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Input Name              → Username        → Profile URL
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-John Doe                → john.doe        → socialink.com/john.doe
-María García            → maria.garcia    → socialink.com/maria.garcia
-Jean-Pierre Dubois      → jeanpierre.dubois → socialink.com/jeanpierre.dubois
-Patrick O'Brien         → patrick.obrien  → socialink.com/patrick.obrien
-DJ CoolBeats            → dj.coolbeats    → socialink.com/dj.coolbeats
-Cool Artist             → cool.artist     → socialink.com/cool.artist
-山田太郎                → yamadataro       → socialink.com/yamadataro
-Test User (duplicate)   → test.user123    → socialink.com/test.user123
+John Doe                → john.doe        → entativa.com/john.doe
+María García            → maria.garcia    → entativa.com/maria.garcia
+Jean-Pierre Dubois      → jeanpierre.dubois → entativa.com/jeanpierre.dubois
+Patrick O'Brien         → patrick.obrien  → entativa.com/patrick.obrien
+DJ CoolBeats            → dj.coolbeats    → entativa.com/dj.coolbeats
+Cool Artist             → cool.artist     → entativa.com/cool.artist
+山田太郎                → yamadataro       → entativa.com/yamadataro
+Test User (duplicate)   → test.user123    → entativa.com/test.user123
 
 All accepted! Clean URLs! No verification! ✅
 
@@ -137,19 +137,19 @@ Core Documentation:
   ✅ /workspace/ENHANCED_DEPLOYMENT_COMPLETE.txt
 
 NEW: Name Policy Documentation:
-  ✅ /workspace/SOCIALINK_NAME_POLICY.md
-  ✅ /workspace/SOCIALINK_VS_FACEBOOK_POLICY.md
-  ✅ /workspace/SOCIALINK_NAME_POLICY_UPDATE.md
-  ✅ /workspace/SocialinkBackend/services/user-service/SOCIALINK_NAME_POLICY.md
+  ✅ /workspace/ENTATIVA_NAME_POLICY.md
+  ✅ /workspace/ENTATIVA_VS_FACEBOOK_POLICY.md
+  ✅ /workspace/ENTATIVA_NAME_POLICY_UPDATE.md
+  ✅ /workspace/EntativaBackend/services/user-service/ENTATIVA_NAME_POLICY.md
 
 Service Documentation:
-  ✅ SocialinkBackend/services/user-service/README.md
+  ✅ EntativaBackend/services/user-service/README.md
   ✅ VignetteBackend/services/user-service/README.md
 
 Test Scripts:
-  ✅ /workspace/test-socialink-auth.sh
+  ✅ /workspace/test-entativa-auth.sh
   ✅ /workspace/test-vignette-auth.sh
-  ✅ /workspace/test-socialink-name-policy.sh (NEW!)
+  ✅ /workspace/test-entativa-name-policy.sh (NEW!)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -157,11 +157,11 @@ Test Scripts:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1. Setup Databases:
-   createdb socialink_users
+   createdb entativa_users
    createdb vignette_users
 
-2. Start Socialink:
-   cd /workspace/SocialinkBackend/services/user-service
+2. Start Entativa:
+   cd /workspace/EntativaBackend/services/user-service
    ./run.sh
 
 3. Start Vignette:
@@ -169,7 +169,7 @@ Test Scripts:
    ./run.sh
 
 4. Test Name Policy:
-   /workspace/test-socialink-name-policy.sh
+   /workspace/test-entativa-name-policy.sh
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -208,7 +208,7 @@ Test Scripts:
 ✅ No OAuth (own protocols)
 ✅ Relaxed name policy (better than Facebook!)
 ✅ Clean usernames (firstname.lastname)
-✅ Profile URLs (socialink.com/name)
+✅ Profile URLs (entativa.com/name)
 ✅ International support (Unicode)
 ✅ Privacy protection
 ✅ LGBTQ+ inclusive
@@ -218,7 +218,7 @@ Test Scripts:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🌟 WHAT MAKES SOCIALINK SPECIAL
+🌟 WHAT MAKES ENTATIVA SPECIAL
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1. Better Name Policy than Facebook
@@ -261,7 +261,7 @@ Test Scripts:
 ║                                                                              ║
 ║                    🎊 PRODUCTION READY DEPLOYMENT 🎊                         ║
 ║                                                                              ║
-║              Socialink: Better than Facebook's Name Policy                   ║
+║              Entativa: Better than Facebook's Name Policy                   ║
 ║              Vignette: Instagram-like with Flexibility                       ║
 ║                                                                              ║
 ║              Built with Excellence by a PhD-level Engineer                   ║

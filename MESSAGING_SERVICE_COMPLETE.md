@@ -278,7 +278,7 @@ WS /ws/{user_id}/{device_id}  - Real-time connection
 ### vs Signal
 ✅ **Same security** (Signal Protocol + MLS)  
 ✅ **Integrated social** (posts, stories, etc.)  
-✅ **Multi-platform** (Socialink + Vignette)  
+✅ **Multi-platform** (Entativa + Vignette)  
 ✅ **Commercial backing** (Entativa)  
 
 ### vs Telegram
@@ -405,4 +405,4 @@ We built a **COMPLETE Signal-level messaging system** with:
 
 ---
 
-**Built with ❤️ by Entativa for Vignette & Socialink**
+**Built with ❤️ by Entativa for Vignette & Entativa**

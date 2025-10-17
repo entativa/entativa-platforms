@@ -2,12 +2,12 @@
 
 ## Overview
 
-I've implemented comprehensive **Profile Management Services** for both **Socialink** (Facebook-like) and **Vignette** (Instagram-like) platforms for **Entativa**. These are production-ready, PhD-level engineered services that integrate seamlessly with your existing JWT authentication system.
+I've implemented comprehensive **Profile Management Services** for both **Entativa** (Facebook-like) and **Vignette** (Instagram-like) platforms for **Entativa**. These are production-ready, PhD-level engineered services that integrate seamlessly with your existing JWT authentication system.
 
 ## What Was Created
 
-### Socialink Backend - Facebook-like Profile Management
-**Location**: `/workspace/SocialinkBackend/services/user-service/`
+### Entativa Backend - Facebook-like Profile Management
+**Location**: `/workspace/EntativaBackend/services/user-service/`
 
 #### Files Created/Updated:
 1. **internal/model/profile.go** (540 lines)
@@ -81,7 +81,7 @@ I've implemented comprehensive **Profile Management Services** for both **Social
 
 ## Features Implemented
 
-### Socialink (Facebook-like) Features
+### Entativa (Facebook-like) Features
 
 #### Core Profile Information
 ✅ Hometown & current city
@@ -185,7 +185,7 @@ I've implemented comprehensive **Profile Management Services** for both **Social
 
 ## API Endpoints
 
-### Socialink Profile API
+### Entativa Profile API
 
 ```
 GET    /profile/:user_id          # Get any user's profile
@@ -218,7 +218,7 @@ PUT    /profile/availability         # Update availability status
 
 ## Database Schema
 
-### Socialink Profiles Table
+### Entativa Profiles Table
 ```sql
 CREATE TABLE profiles (
     id UUID PRIMARY KEY,
@@ -290,7 +290,7 @@ profile, err := profileService.GetProfileWithUser(ctx, userUUID)
 
 ## Request/Response Examples
 
-### Socialink - Add Work Experience
+### Entativa - Add Work Experience
 ```json
 POST /profile/work
 {
@@ -396,10 +396,10 @@ Comprehensive error handling with meaningful messages:
 
 ## Running the Migrations
 
-### Socialink
+### Entativa
 ```bash
-cd SocialinkBackend/services/user-service
-psql -U postgres -d socialink_db -f migrations/003_create_profiles_table.up.sql
+cd EntativaBackend/services/user-service
+psql -U postgres -d entativa_db -f migrations/003_create_profiles_table.up.sql
 ```
 
 ### Vignette
@@ -442,7 +442,7 @@ profileRoutes.Use(authMiddleware.RequireAuth())
 curl -X GET http://localhost:8080/profile/me \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 
-# Update profile info (Socialink)
+# Update profile info (Entativa)
 curl -X PUT http://localhost:8080/profile/info \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -H "Content-Type: application/json" \
@@ -525,13 +525,13 @@ curl -X POST http://localhost:8080/profile/creator/enable \
 
 | Service | Files | Lines of Code | Features |
 |---------|-------|---------------|----------|
-| **Socialink Profile** | 4 | ~1,510 | Work, Education, Contact, Privacy |
+| **Entativa Profile** | 4 | ~1,510 | Work, Education, Contact, Privacy |
 | **Vignette Profile** | 4 | ~1,430 | Creator, Business, Links, Highlights |
 | **Total** | 8 | ~2,940 | 25+ Endpoints |
 
 ## Differences Between Platforms
 
-### Socialink (Facebook-like)
+### Entativa (Facebook-like)
 - Focus on **personal connections**
 - Work & education history
 - Relationship status
@@ -559,11 +559,11 @@ I've built comprehensive, production-ready profile management services for both 
 ✅ **Database migrations** ready to deploy  
 ✅ **PhD-level code quality** with clean architecture  
 
-Both services are ready to integrate into your existing user-service infrastructure and provide rich profile management capabilities for **Entativa's Socialink and Vignette platforms**!
+Both services are ready to integrate into your existing user-service infrastructure and provide rich profile management capabilities for **Entativa's Entativa and Vignette platforms**!
 
 ---
 
 **Implementation Date**: October 15, 2025  
 **Company**: Entativa  
-**Platforms**: Socialink (Facebook-like), Vignette (Instagram-like)  
+**Platforms**: Entativa (Facebook-like), Vignette (Instagram-like)  
 **Status**: ✅ Complete & Ready for Integration

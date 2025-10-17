@@ -4,13 +4,13 @@
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-✅ SOCIALINK AUTHENTICATION SERVICE (Facebook-like)
+✅ ENTATIVA AUTHENTICATION SERVICE (Facebook-like)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  📁 Location: /workspace/SocialinkBackend/services/user-service/
+  📁 Location: /workspace/EntativaBackend/services/user-service/
   🌐 Port: 8001
   📊 Files: 37 Go files
   🔐 Features: Instant signup, JWT auth, session management
-  🚀 Start: cd /workspace/SocialinkBackend/services/user-service && ./run.sh
+  🚀 Start: cd /workspace/EntativaBackend/services/user-service && ./run.sh
 
 ✅ VIGNETTE AUTHENTICATION SERVICE (Instagram-like)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -25,12 +25,12 @@
   📖 Implementation Summary: /workspace/META_AUTH_IMPLEMENTATION_SUMMARY.md
   📖 Quick Start Guide: /workspace/QUICK_START_GUIDE.md
   📖 Project Structure: /workspace/PROJECT_STRUCTURE.md
-  📖 Socialink README: SocialinkBackend/services/user-service/README.md
+  📖 Entativa README: EntativaBackend/services/user-service/README.md
   📖 Vignette README: VignetteBackend/services/user-service/README.md
 
 🧪 TESTING SCRIPTS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  🔵 Test Socialink: /workspace/test-socialink-auth.sh
+  🔵 Test Entativa: /workspace/test-entativa-auth.sh
   🟣 Test Vignette: /workspace/test-vignette-auth.sh
 
 🏗️ ARCHITECTURE HIGHLIGHTS
@@ -64,7 +64,7 @@
 
 📊 STATISTICS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  • Total Go Files: 82 (37 Socialink + 45 Vignette)
+  • Total Go Files: 82 (37 Entativa + 45 Vignette)
   • Lines of Code: 5,000+
   • Services: 2 complete microservices
   • API Endpoints: 10 (5 per service)
@@ -75,31 +75,31 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 1. Setup PostgreSQL databases:
-   createdb socialink_users
+   createdb entativa_users
    createdb vignette_users
 
-2. Start Socialink:
-   cd /workspace/SocialinkBackend/services/user-service
+2. Start Entativa:
+   cd /workspace/EntativaBackend/services/user-service
    ./run.sh
 
 3. Start Vignette:
    cd /workspace/VignetteBackend/services/user-service
    ./run.sh
 
-4. Test Socialink:
+4. Test Entativa:
    curl http://localhost:8001/health
 
 5. Test Vignette:
    curl http://localhost:8002/health
 
 6. Run automated tests:
-   /workspace/test-socialink-auth.sh
+   /workspace/test-entativa-auth.sh
    /workspace/test-vignette-auth.sh
 
 📡 API ENDPOINTS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-SOCIALINK (http://localhost:8001):
+ENTATIVA (http://localhost:8001):
   GET  /health                    # Health check
   POST /api/v1/auth/signup        # Create account
   POST /api/v1/auth/login         # Login
@@ -129,7 +129,7 @@ VIGNETTE (http://localhost:8002):
 🎉 SUCCESS CRITERIA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   ✅ Meta-level authentication implemented
-  ✅ Socialink (Facebook-like) complete
+  ✅ Entativa (Facebook-like) complete
   ✅ Vignette (Instagram-like) complete
   ✅ Instant access, no verification
   ✅ Production-ready code

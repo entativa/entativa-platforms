@@ -6,7 +6,7 @@
 
 ## 📊 Implementation Metrics
 
-### Socialink Media Service
+### Entativa Media Service
 - **Files Implemented**: 26 Rust files
 - **Total Lines**: 4,804 lines of production code
 - **Completion**: 100%
@@ -55,7 +55,7 @@
 
 ## 📁 Complete File List
 
-### Socialink Backend
+### Entativa Backend
 ```
 src/
 ├── main.rs (300 lines) ✅
@@ -98,7 +98,7 @@ Total: 26 files, 4,804 lines
 
 ### Vignette Backend
 ```
-Same as Socialink PLUS:
+Same as Entativa PLUS:
 
 src/services/
 ├── filter_service.rs (500 lines) ✅
@@ -256,7 +256,7 @@ Total: 29 files, 5,652 lines
 
 ### 1. Run Migrations
 ```bash
-cd SocialinkBackend/services/media-service
+cd EntativaBackend/services/media-service
 sqlx migrate run
 ```
 
@@ -266,7 +266,7 @@ sqlx migrate run
 export STORAGE_PROVIDER="s3"
 export AWS_ACCESS_KEY_ID="your-key"
 export AWS_SECRET_ACCESS_KEY="your-secret"
-export S3_BUCKET="socialink-media"
+export S3_BUCKET="entativa-media"
 export S3_REGION="us-east-1"
 
 # For Local (development)
@@ -277,7 +277,7 @@ export LOCAL_STORAGE_PATH="./media_storage"
 ### 3. Build & Run
 ```bash
 cargo build --release
-./target/release/socialink-media-service
+./target/release/entativa-media-service
 ```
 
 Service starts on: `http://0.0.0.0:8083`
@@ -383,7 +383,7 @@ Service starts on: `http://0.0.0.0:8083`
 
 ## 🎯 What Users Get
 
-### On Socialink
+### On Entativa
 - Crystal-clear photos (Lanczos3 + 92% quality)
 - Smooth HD video playback
 - Instant thumbnail previews
@@ -578,7 +578,7 @@ curl -X POST http://localhost:8083/api/v1/process/media-id \
 
 **Two premium media services delivered for Entativa:**
 
-### Socialink Media Service
+### Entativa Media Service
 - 26 files, 4,804 lines
 - Broadcast-quality video
 - Professional image processing
@@ -586,7 +586,7 @@ curl -X POST http://localhost:8083/api/v1/process/media-id \
 
 ### Vignette Media Service
 - 29 files, 5,652 lines
-- Everything from Socialink PLUS
+- Everything from Entativa PLUS
 - 14 Instagram-quality filters
 - AR filter capabilities
 - CDN global distribution

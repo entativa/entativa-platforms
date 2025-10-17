@@ -17,7 +17,7 @@
 
 ## Overview
 
-Both Socialink and Vignette services now include enterprise-grade advanced features while maintaining the Meta-level instant-access authentication philosophy.
+Both Entativa and Vignette services now include enterprise-grade advanced features while maintaining the Meta-level instant-access authentication philosophy.
 
 ### New Features Summary
 
@@ -61,7 +61,7 @@ Authorization: Bearer <access_token>
   "message": "2FA setup initiated. Scan the QR code with your authenticator app",
   "data": {
     "secret": "JBSWY3DPEHPK3PXP",
-    "qr_code_url": "otpauth://totp/Socialink:user@example.com?secret=...",
+    "qr_code_url": "otpauth://totp/Entativa:user@example.com?secret=...",
     "backup_codes": [
       "ABCD1234EFGH5678",
       "WXYZ9876QRST5432",
@@ -269,7 +269,7 @@ S3/MinIO integration for media uploads with automatic optimization and CDN suppo
 
 ### API Endpoints
 
-#### 1. Upload Profile Picture (Socialink)
+#### 1. Upload Profile Picture (Entativa)
 ```http
 POST /api/v1/media/profile-picture
 Authorization: Bearer <access_token>
@@ -289,7 +289,7 @@ file=@profile.jpg
 }
 ```
 
-#### 2. Upload Cover Photo (Socialink)
+#### 2. Upload Cover Photo (Entativa)
 ```http
 POST /api/v1/media/cover-photo
 Authorization: Bearer <access_token>
@@ -310,7 +310,7 @@ file=@cover.jpg
 S3_ENDPOINT=http://localhost:9000           # MinIO or S3 endpoint
 S3_ACCESS_KEY_ID=your-access-key           # S3 access key
 S3_SECRET_ACCESS_KEY=your-secret-key       # S3 secret key
-S3_BUCKET_NAME=socialink-media             # Bucket name
+S3_BUCKET_NAME=entativa-media             # Bucket name
 S3_REGION=us-east-1                        # AWS region
 S3_CDN_URL=https://cdn.example.com         # Optional CDN
 S3_USE_PATH_STYLE=true                     # true for MinIO
@@ -434,7 +434,7 @@ gRPC server for high-performance microservice communication.
 ```protobuf
 syntax = "proto3";
 
-package socialink.user;
+package entativa.user;
 
 service UserService {
   rpc GetUser(GetUserRequest) returns (UserResponse);
@@ -447,13 +447,13 @@ service UserService {
 ### Configuration
 
 ```env
-GRPC_PORT=9001                 # Socialink gRPC port
+GRPC_PORT=9001                 # Entativa gRPC port
 GRPC_ENABLED=true              # Enable/disable gRPC server
 ```
 
 ### Ports
 
-- **Socialink gRPC**: Port 9001
+- **Entativa gRPC**: Port 9001
 - **Vignette gRPC**: Port 9002
 
 ### Usage (Go Client Example)
@@ -563,9 +563,9 @@ ALLOWED_ORIGINS=*
 # Database
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=socialink
-DB_PASSWORD=socialink_password
-DB_NAME=socialink_users
+DB_USER=entativa
+DB_PASSWORD=entativa_password
+DB_NAME=entativa_users
 DB_SSL_MODE=disable
 DB_MAX_CONNECTIONS=100
 DB_MAX_IDLE_CONNS=10
@@ -586,7 +586,7 @@ JWT_REFRESH_TOKEN_TTL=604800
 S3_ENDPOINT=http://localhost:9000
 S3_ACCESS_KEY_ID=
 S3_SECRET_ACCESS_KEY=
-S3_BUCKET_NAME=socialink-media
+S3_BUCKET_NAME=entativa-media
 S3_REGION=us-east-1
 S3_CDN_URL=
 S3_USE_PATH_STYLE=true
@@ -694,7 +694,7 @@ done
 
 ## Summary
 
-Both Socialink and Vignette now include:
+Both Entativa and Vignette now include:
 
 ✅ **Enterprise Security**: 2FA, password reset, account recovery  
 ✅ **Performance**: Redis caching and rate limiting  

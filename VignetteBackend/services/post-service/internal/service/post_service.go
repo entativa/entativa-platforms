@@ -329,7 +329,7 @@ func (s *PostService) deduplicateStrings(strs []string) []string {
 	return result
 }
 
-// Cache methods (same as Socialink with minor adjustments)
+// Cache methods (same as Entativa with minor adjustments)
 func (s *PostService) cachePost(ctx context.Context, post *model.Post) {
 	if s.redis == nil {
 		return

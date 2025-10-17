@@ -164,7 +164,7 @@ Building HTTP endpoints to expose the services!
   - Contact sharing
 
 ### Phase 4: Integration & Deployment
-- [ ] **Socialink Integration**
+- [ ] **Entativa Integration**
 - [ ] **Vignette Integration**
 - [ ] **Docker setup**
 - [ ] **Performance testing**
@@ -246,7 +246,7 @@ Messaging Service (Rust + Actix)
 ### vs Signal
 ✅ **Same security** (libsignal + MLS)  
 ✅ **Integrated social** (posts, stories)  
-✅ **Multi-platform** (Socialink + Vignette)  
+✅ **Multi-platform** (Entativa + Vignette)  
 
 ### vs Telegram
 ✅ **TRUE E2EE** (Telegram: optional only)  

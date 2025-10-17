@@ -2,11 +2,11 @@
 
 ## 🎯 Overview
 
-This document provides a complete overview of the authentication services developed for Socialink and Vignette platforms.
+This document provides a complete overview of the authentication services developed for Entativa and Vignette platforms.
 
 ## 📊 Project Statistics
 
-- **Total Go Files Created**: 82 files (37 Socialink + 45 Vignette)
+- **Total Go Files Created**: 82 files (37 Entativa + 45 Vignette)
 - **Lines of Code**: ~5,000+ lines of production-ready Go code
 - **Services**: 2 complete microservices
 - **Database Tables**: 4 tables (2 per service)
@@ -15,10 +15,10 @@ This document provides a complete overview of the authentication services develo
 - **Docker Support**: Full containerization
 - **Test Scripts**: 2 automated test scripts
 
-## 🔵 Socialink Authentication Service Structure
+## 🔵 Entativa Authentication Service Structure
 
 ```
-SocialinkBackend/services/user-service/
+EntativaBackend/services/user-service/
 ├── cmd/
 │   └── api/
 │       └── main.go                          # Application entry point
@@ -275,11 +275,11 @@ Database Schema:
 ├── META_AUTH_IMPLEMENTATION_SUMMARY.md      # Complete implementation summary
 ├── QUICK_START_GUIDE.md                     # Step-by-step setup guide
 ├── PROJECT_STRUCTURE.md                     # This file
-├── test-socialink-auth.sh                   # Automated API tests (Socialink)
+├── test-entativa-auth.sh                   # Automated API tests (Entativa)
 └── test-vignette-auth.sh                    # Automated API tests (Vignette)
 
-SocialinkBackend/services/user-service/
-└── README.md                                # Socialink service documentation
+EntativaBackend/services/user-service/
+└── README.md                                # Entativa service documentation
 
 VignetteBackend/services/user-service/
 └── README.md                                # Vignette service documentation
@@ -374,7 +374,7 @@ Client Response
 
 ## 🎯 Key Features Comparison
 
-| Feature | Socialink | Vignette |
+| Feature | Entativa | Vignette |
 |---------|-----------|----------|
 | **Platform Style** | Facebook-like | Instagram-like |
 | **Username** | Auto-generated | User-chosen |
@@ -387,7 +387,7 @@ Client Response
 
 ## 📊 Database Indexes
 
-### Socialink
+### Entativa
 ```sql
 -- Performance indexes
 idx_users_email         (users.email WHERE is_deleted = false)

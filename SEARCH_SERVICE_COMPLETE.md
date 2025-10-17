@@ -19,7 +19,7 @@ A **LEGENDARY enterprise-grade search service** with Elasticsearch, Redis cachin
 - **Endpoints**: 30+
 - **Port**: 8087
 
-### Socialink Search Service  
+### Entativa Search Service  
 - **Language**: Go + Elasticsearch + Redis
 - **Lines**: 4,750+
 - **Files**: 20
@@ -373,9 +373,9 @@ go run cmd/api/main.go
 # Runs on port 8087
 ```
 
-### Socialink
+### Entativa
 ```bash
-cd SocialinkBackend/services/search-service
+cd EntativaBackend/services/search-service
 go run cmd/api/main.go
 # Runs on port 8088
 ```
@@ -519,7 +519,7 @@ Usage statistics
 **Status**: ✅ **100% COMPLETE**  
 **Quality**: 🏆 **Production-Grade**  
 **Lines**: 9,500+  
-**Platforms**: 2 (Vignette + Socialink)  
+**Platforms**: 2 (Vignette + Entativa)  
 **Ready**: 🚀 **Deploy & Search!**  
 
 **The search service is LEGENDARY!** 🔍⚡🔥

@@ -31,7 +31,7 @@ const (
 // Follower thresholds to go live
 const (
 	MinFollowersVignette = 100  // Vignette: 100 followers to go live
-	MinFriendsSocialink  = 50   // Socialink: 50 friends to go live
+	MinFriendsEntativa  = 50   // Entativa: 50 friends to go live
 )
 
 type StreamStatus string

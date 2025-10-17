@@ -16,8 +16,8 @@
 **Features:**
 - Traditional posts (text + media)
 - Comments with nesting
-- Likes with reactions (Socialink) / simple likes (Vignette)
-- Shares (Socialink) / Saves (Vignette)
+- Likes with reactions (Entativa) / simple likes (Vignette)
+- Shares (Entativa) / Saves (Vignette)
 - **Takes** (short-form video)
 - **Behind-the-Takes (BTT)** ⭐ Educational content
 - **Takes Templates** ⭐ Reusable creativity
@@ -293,7 +293,7 @@ TOTAL: 32+ tables/collections/indices
 🔄 Search Service (70% complete)  
 🔄 Notification Service (10% complete)  
 
-### Socialink (Facebook-like)
+### Entativa (Facebook-like)
 ✅ Post Service (text+media, reactions, shares)  
 ✅ Story Service (24h ephemeral, stickers, highlights)  
 🔄 Search Service (70% complete)  
@@ -364,7 +364,7 @@ Result: Faster discovery + better UX
 ## 🚀 What's Ready to Deploy
 
 ### ✅ **100% Complete & Ready**
-1. **Post Services** (Socialink + Vignette)
+1. **Post Services** (Entativa + Vignette)
    - Full CRUD
    - Takes ecosystem (BTT, Templates, Trends)
    - gRPC integration
@@ -372,7 +372,7 @@ Result: Faster discovery + better UX
    - Redis caching
    - Comprehensive migrations
    
-2. **Story Services** (Socialink + Vignette)
+2. **Story Services** (Entativa + Vignette)
    - 24-hour stories
    - 6 interactive stickers
    - Highlights
@@ -499,7 +499,7 @@ FILES CREATED:               138+
 API ENDPOINTS:               120+
 DATABASE TABLES:             32+
 
-PLATFORMS COVERED:           2 (Socialink + Vignette)
+PLATFORMS COVERED:           2 (Entativa + Vignette)
 LANGUAGES USED:              4 (Go, Python, Scala, Rust)
 DATABASES USED:              4 (PostgreSQL, MongoDB, Redis, Elasticsearch)
 
@@ -527,7 +527,7 @@ We've built:
 - **5 revolutionary features**
 - **Comprehensive documentation**
 
-**Both Socialink and Vignette now have:**
+**Both Entativa and Vignette now have:**
 - ✅ Full posting capabilities with Takes ecosystem
 - ✅ Epic story features with interactive stickers
 - 🔄 Search capabilities (core complete)

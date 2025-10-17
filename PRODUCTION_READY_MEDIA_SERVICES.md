@@ -238,7 +238,7 @@ fast_image_resize = "3.0"  # High-quality resizing
 
 ## 📊 Code Statistics
 
-### Socialink Media Service
+### Entativa Media Service
 ```
 Files:    26 Rust files (all production code)
 Lines:    5,100+ lines (up from 4,804)
@@ -384,7 +384,7 @@ SERVER_PORT=8083
 MAX_CONNECTIONS=25000
 
 # Database
-DATABASE_URL=postgresql://localhost/socialink_media
+DATABASE_URL=postgresql://localhost/entativa_media
 DB_POOL_SIZE=20
 
 # Redis
@@ -395,12 +395,12 @@ REDIS_POOL_SIZE=10
 STORAGE_PROVIDER=s3
 AWS_ACCESS_KEY_ID=your-key
 AWS_SECRET_ACCESS_KEY=your-secret
-S3_BUCKET=socialink-media-production
+S3_BUCKET=entativa-media-production
 S3_REGION=us-east-1
 
 # CDN
 CDN_ENABLED=true
-CDN_BASE_URL=https://cdn.socialink.com
+CDN_BASE_URL=https://cdn.entativa.com
 
 # Processing
 MAX_IMAGE_DIMENSION=8192
@@ -549,7 +549,7 @@ OVERALL:            ██████████ 100% PRODUCTION-READY
 
 **Two world-class media services ready to deploy:**
 
-### Socialink (Facebook-like)
+### Entativa (Facebook-like)
 - 26 files, 5,100+ lines
 - Complete image/video/audio processing
 - EXIF, GPS, ID3, waveforms
@@ -558,7 +558,7 @@ OVERALL:            ██████████ 100% PRODUCTION-READY
 
 ### Vignette (Instagram-like)
 - 29 files, 6,200+ lines
-- Everything from Socialink PLUS
+- Everything from Entativa PLUS
 - 14 Instagram-quality filters
 - Face detection with OpenCV
 - 7 AR filters (dog, cat, crown, glasses, beauty, makeup)

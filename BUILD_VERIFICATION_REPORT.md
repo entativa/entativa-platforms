@@ -30,7 +30,7 @@
 
 ---
 
-### **Socialink Backend** (Facebook-like)
+### **Entativa Backend** (Facebook-like)
 
 | Service | Language | Build Status | Tests | Port |
 |---------|----------|--------------|-------|------|
@@ -49,7 +49,7 @@
 | Streaming Service | Go | ✅ SUCCESS | ✅ | 8098 |
 | Event Service | Go | ✅ SUCCESS | ✅ | 8099 |
 
-**Socialink Status**: 🟢 **14/14 services ready**
+**Entativa Status**: 🟢 **14/14 services ready**
 
 ---
 

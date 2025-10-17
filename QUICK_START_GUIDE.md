@@ -1,6 +1,6 @@
 # 🚀 Meta-Level Authentication Services - Quick Start Guide
 
-This guide will help you get both Socialink and Vignette authentication services up and running in minutes.
+This guide will help you get both Entativa and Vignette authentication services up and running in minutes.
 
 ## 📋 Prerequisites
 
@@ -20,15 +20,15 @@ Before you begin, ensure you have the following installed:
 psql -U postgres
 
 # Create databases
-CREATE DATABASE socialink_users;
+CREATE DATABASE entativa_users;
 CREATE DATABASE vignette_users;
 
 # Create users (optional, for production)
-CREATE USER socialink WITH PASSWORD 'socialink_password';
+CREATE USER entativa WITH PASSWORD 'entativa_password';
 CREATE USER vignette WITH PASSWORD 'vignette_password';
 
 # Grant privileges
-GRANT ALL PRIVILEGES ON DATABASE socialink_users TO socialink;
+GRANT ALL PRIVILEGES ON DATABASE entativa_users TO entativa;
 GRANT ALL PRIVILEGES ON DATABASE vignette_users TO vignette;
 
 # Exit psql
@@ -42,19 +42,19 @@ The services automatically run migrations on startup. Tables will be created aut
 - ✅ `sessions` table
 - ✅ Indexes for performance
 
-## 🔵 Starting Socialink Service
+## 🔵 Starting Entativa Service
 
 ### Method 1: Using the Run Script (Recommended)
 
 ```bash
-cd /workspace/SocialinkBackend/services/user-service
+cd /workspace/EntativaBackend/services/user-service
 ./run.sh
 ```
 
 ### Method 2: Manual Start
 
 ```bash
-cd /workspace/SocialinkBackend/services/user-service
+cd /workspace/EntativaBackend/services/user-service
 
 # Copy environment file
 cp .env.example .env
@@ -74,7 +74,7 @@ go run cmd/api/main.go
 **Logs should show**:
 ```
 ✓ Connected to PostgreSQL database
-🚀 Socialink User Service starting on port 8001
+🚀 Entativa User Service starting on port 8001
 📝 Environment: development
 🔐 Meta-level authentication enabled (instant access, no verification)
 ✨ Ready to accept connections!
@@ -113,7 +113,7 @@ go run cmd/api/main.go
 
 ### Quick Health Check
 
-**Socialink**:
+**Entativa**:
 ```bash
 curl http://localhost:8001/health
 ```
@@ -125,9 +125,9 @@ curl http://localhost:8002/health
 
 ### Comprehensive API Tests
 
-**Test Socialink** (Signup, Login, Get User, Logout):
+**Test Entativa** (Signup, Login, Get User, Logout):
 ```bash
-/workspace/test-socialink-auth.sh
+/workspace/test-entativa-auth.sh
 ```
 
 **Test Vignette** (Signup, Login, Get User, Logout):
@@ -137,7 +137,7 @@ curl http://localhost:8002/health
 
 ## 📝 Manual API Testing
 
-### Socialink - Create Account
+### Entativa - Create Account
 
 ```bash
 curl -X POST http://localhost:8001/api/v1/auth/signup \
@@ -152,7 +152,7 @@ curl -X POST http://localhost:8001/api/v1/auth/signup \
   }'
 ```
 
-### Socialink - Login
+### Entativa - Login
 
 ```bash
 curl -X POST http://localhost:8001/api/v1/auth/login \
@@ -191,7 +191,7 @@ curl -X POST http://localhost:8002/api/v1/auth/login \
 
 Replace `<ACCESS_TOKEN>` with the token from signup/login response:
 
-**Socialink**:
+**Entativa**:
 ```bash
 curl -X GET http://localhost:8001/api/v1/auth/me \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
@@ -207,10 +207,10 @@ curl -X GET http://localhost:8002/api/v1/auth/me \
 
 ### Build Docker Images
 
-**Socialink**:
+**Entativa**:
 ```bash
-cd /workspace/SocialinkBackend/services/user-service
-docker build -t socialink-user-service .
+cd /workspace/EntativaBackend/services/user-service
+docker build -t entativa-user-service .
 ```
 
 **Vignette**:
@@ -221,15 +221,15 @@ docker build -t vignette-user-service .
 
 ### Run with Docker
 
-**Socialink**:
+**Entativa**:
 ```bash
 docker run -p 8001:8001 \
   -e DB_HOST=host.docker.internal \
   -e DB_PORT=5432 \
-  -e DB_USER=socialink \
-  -e DB_PASSWORD=socialink_password \
-  -e DB_NAME=socialink_users \
-  socialink-user-service
+  -e DB_USER=entativa \
+  -e DB_PASSWORD=entativa_password \
+  -e DB_NAME=entativa_users \
+  entativa-user-service
 ```
 
 **Vignette**:
@@ -250,7 +250,7 @@ docker run -p 8002:8002 \
 Both services use the same configuration structure. See `.env.example` for all options:
 
 **Key Variables**:
-- `PORT` - Service port (8001 for Socialink, 8002 for Vignette)
+- `PORT` - Service port (8001 for Entativa, 8002 for Vignette)
 - `DB_HOST` - PostgreSQL host
 - `DB_PORT` - PostgreSQL port
 - `DB_USER` - Database user
@@ -274,7 +274,7 @@ For production deployment:
 
 ## 📊 API Endpoints Summary
 
-### Socialink (Port 8001)
+### Entativa (Port 8001)
 
 | Method | Endpoint | Auth Required | Description |
 |--------|----------|---------------|-------------|
@@ -305,7 +305,7 @@ pg_isready
 
 **Check if port is already in use**:
 ```bash
-lsof -i :8001  # for Socialink
+lsof -i :8001  # for Entativa
 lsof -i :8002  # for Vignette
 ```
 
@@ -313,7 +313,7 @@ lsof -i :8002  # for Vignette
 
 **Verify database exists**:
 ```bash
-psql -U postgres -l | grep socialink
+psql -U postgres -l | grep entativa
 psql -U postgres -l | grep vignette
 ```
 
@@ -327,7 +327,7 @@ This is expected if you're testing multiple times. Either:
 
 ## 📚 Additional Resources
 
-- **Socialink README**: `/workspace/SocialinkBackend/services/user-service/README.md`
+- **Entativa README**: `/workspace/EntativaBackend/services/user-service/README.md`
 - **Vignette README**: `/workspace/VignetteBackend/services/user-service/README.md`
 - **Implementation Summary**: `/workspace/META_AUTH_IMPLEMENTATION_SUMMARY.md`
 

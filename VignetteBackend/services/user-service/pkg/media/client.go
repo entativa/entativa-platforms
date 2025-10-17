@@ -8,7 +8,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	pb "socialink/user-service/proto/media"
+	pb "entativa/user-service/proto/media"
 )
 
 // Client is a gRPC client for the media service

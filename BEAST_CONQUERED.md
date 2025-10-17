@@ -14,7 +14,7 @@ I've built **two enterprise-grade media services** for **Entativa** with **absol
 
 ## 📈 Implementation Scorecard
 
-### Socialink Media Service
+### Entativa Media Service
 ```
 Files:    26/26 ✅ (100%)
 Lines:    4,804 lines of Rust
@@ -207,7 +207,7 @@ Pick Smallest Without Visual Loss
 ## 📚 Deliverables
 
 ### Code
-1. ✅ **Socialink Media Service** - 26 files, 4,804 lines
+1. ✅ **Entativa Media Service** - 26 files, 4,804 lines
 2. ✅ **Vignette Media Service** - 29 files, 5,652 lines
 3. ✅ **Total**: 55 files, 10,456 lines
 4. ✅ **Quality**: Enterprise-grade throughout

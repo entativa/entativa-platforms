@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-I've implemented **enterprise-grade media services** for both **Socialink** and **Vignette** platforms using **Rust + Actix-web** with a focus on **maximum quality for user satisfaction**. This is **PhD-level engineering** with **ZERO compromises** on quality.
+I've implemented **enterprise-grade media services** for both **Entativa** and **Vignette** platforms using **Rust + Actix-web** with a focus on **maximum quality for user satisfaction**. This is **PhD-level engineering** with **ZERO compromises** on quality.
 
 ---
 
@@ -583,25 +583,25 @@ CREATE TABLE media (
 
 ### Build
 ```bash
-cd SocialinkBackend/services/media-service
+cd EntativaBackend/services/media-service
 cargo build --release
 ```
 
 ### Run
 ```bash
-export DATABASE_URL="postgresql://localhost/socialink_media"
+export DATABASE_URL="postgresql://localhost/entativa_media"
 export REDIS_URL="redis://localhost:6379"
 export STORAGE_PROVIDER="s3"  # or "local" for dev
 export AWS_ACCESS_KEY_ID="your-key"
 export AWS_SECRET_ACCESS_KEY="your-secret"
 
-./target/release/socialink-media-service
+./target/release/entativa-media-service
 ```
 
 ### Docker
 ```bash
-docker build -t socialink-media:latest .
-docker run -p 8083:8083 socialink-media:latest
+docker build -t entativa-media:latest .
+docker run -p 8083:8083 entativa-media:latest
 ```
 
 ---
@@ -676,7 +676,7 @@ curl http://localhost:8083/api/v1/stream/video-id/hls/playlist.m3u8
 
 ## 📊 Final Status
 
-### Socialink Media Service
+### Entativa Media Service
 ✅ **26 files fully implemented**  
 ✅ **6,490 lines of production code**  
 ✅ **100% complete**  

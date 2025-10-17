@@ -74,11 +74,11 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--sources', nargs='+', default=['assets/canonical-svgs'], help='source folders with SVGs')
     p.add_argument('--android-projects', nargs='*', default=[
-        'SocialinkAndroid',
+        'EntativaAndroid',
         'VignetteAndroid',
     ], help='android project roots')
     p.add_argument('--ios-projects', nargs='*', default=[
-        'SocialinkiOS',
+        'EntativaiOS',
         'VignetteiOS',
     ], help='ios project roots')
     p.add_argument('--dry-run', action='store_true')

@@ -52,7 +52,7 @@ build_go_service "Community Service" "/workspace/VignetteBackend/services/commun
 build_go_service "Streaming Service" "/workspace/VignetteBackend/services/live-streaming-service"
 build_go_service "Creator Service" "/workspace/VignetteBackend/services/creator-service"
 build_go_service "Settings Service" "/workspace/VignetteBackend/services/settings-service"
-build_go_service "Event Service" "/workspace/SocialinkBackend/services/event-service"
+build_go_service "Event Service" "/workspace/EntativaBackend/services/event-service"
 
 # Summary
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

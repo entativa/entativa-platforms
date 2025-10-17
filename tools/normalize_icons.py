@@ -26,8 +26,8 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--canonical', default='assets/canonical-svgs', help='folder with canonical SVGs')
     p.add_argument('--clients', nargs='+', default=[
-        'SocialinkAndroid/app/src/main/assets/icons',
-        'SocialinkiOS/Assets/Icons',
+        'EntativaAndroid/app/src/main/assets/icons',
+        'EntativaiOS/Assets/Icons',
         'VignetteAndroid/app/src/main/assets/icons',
         'VignetteiOS/Assets/Icons',
     ], help='client icon folders to populate')

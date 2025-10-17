@@ -48,7 +48,7 @@ python3 tools/normalize_icons.py
 3. Optimize the canonical and client SVGs (optional):
 
 ```bash
-python3 tools/optimize_svgs.py assets/canonical-svgs SocialinkAndroid/app/src/main/assets/icons
+python3 tools/optimize_svgs.py assets/canonical-svgs EntativaAndroid/app/src/main/assets/icons
 ```
 
 4. Generate platform assets (PNGs + PDFs):

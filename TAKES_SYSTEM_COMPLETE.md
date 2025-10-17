@@ -403,7 +403,7 @@ Migrations:
 Total: ~2,500 lines for Takes ecosystem
 ```
 
-### Socialink (Facebook-like)
+### Entativa (Facebook-like)
 ```
 Same implementation copied and rebranded
 Total: ~2,500 lines
@@ -722,7 +722,7 @@ Creator @EffectsWizard creates template
 ## 📦 Deployment
 
 ### Both Platforms
-- Socialink: Takes system ✅
+- Entativa: Takes system ✅
 - Vignette: Takes system ✅
 
 ### Migration
@@ -730,8 +730,8 @@ Creator @EffectsWizard creates template
 # Vignette
 psql -d vignette_posts -f migrations/005_create_takes_tables.up.sql
 
-# Socialink
-psql -d socialink_posts -f migrations/005_create_takes_tables.up.sql
+# Entativa
+psql -d entativa_posts -f migrations/005_create_takes_tables.up.sql
 ```
 
 ### Run
@@ -764,7 +764,7 @@ go run cmd/api/main.go
 **Implementation**: ✅ **COMPLETE**  
 **Code Quality**: 🏆 **Production-Grade**  
 **Originality**: ⭐⭐⭐⭐⭐ **Revolutionary**  
-**Both Platforms**: ✅ **Socialink + Vignette**  
+**Both Platforms**: ✅ **Entativa + Vignette**  
 
 **Takes will be LEGENDARY!** 🎬🔥
 

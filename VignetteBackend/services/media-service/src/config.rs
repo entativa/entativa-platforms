@@ -213,11 +213,11 @@ impl Default for Config {
                     base_path: "./media_storage".to_string(),
                     serve_url: "http://localhost:8083/media".to_string(),
                 },
-                bucket_name: "socialink-media".to_string(),
+                bucket_name: "entativa-media".to_string(),
                 region: "us-east-1".to_string(),
             },
             database: DatabaseConfig {
-                url: "postgresql://postgres:postgres@localhost/socialink_media".to_string(),
+                url: "postgresql://postgres:postgres@localhost/entativa_media".to_string(),
                 max_connections: 100,
                 min_connections: 10,
                 connect_timeout_secs: 30,

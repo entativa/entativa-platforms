@@ -439,7 +439,7 @@ ffprobe -version
 
 ```bash
 # Download Roboto font
-cd SocialinkBackend/services/media-service/assets/fonts
+cd EntativaBackend/services/media-service/assets/fonts
 wget https://github.com/google/fonts/raw/main/apache/roboto/static/Roboto-Regular.ttf
 
 # Or use any TrueType font you prefer
@@ -449,7 +449,7 @@ cp /path/to/your/font.ttf ./Roboto-Regular.ttf
 ### 3. Build
 
 ```bash
-cd SocialinkBackend/services/media-service
+cd EntativaBackend/services/media-service
 cargo build --release
 ```
 
@@ -457,12 +457,12 @@ cargo build --release
 
 ```bash
 # Set environment variables
-export DATABASE_URL="postgresql://localhost/socialink_media"
+export DATABASE_URL="postgresql://localhost/entativa_media"
 export REDIS_URL="redis://localhost:6379"
 export STORAGE_PROVIDER="s3"  # or "local"
 
 # Run
-./target/release/socialink-media-service
+./target/release/entativa-media-service
 ```
 
 ---

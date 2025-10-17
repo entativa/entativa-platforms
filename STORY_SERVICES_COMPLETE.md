@@ -20,7 +20,7 @@
 - ✅ FastAPI with async
 - ✅ Comprehensive API (20+ endpoints)
 
-### **Socialink Story Service** (Facebook-like)
+### **Entativa Story Service** (Facebook-like)
 - ✅ Same features as Vignette
 - ✅ Rebranded for Facebook-style
 - ✅ Different port (8086)
@@ -539,9 +539,9 @@ cd VignetteBackend/services/story-service
 uvicorn app.main:app --host 0.0.0.0 --port 8085
 ```
 
-### Socialink
+### Entativa
 ```bash
-cd SocialinkBackend/services/story-service
+cd EntativaBackend/services/story-service
 uvicorn app.main:app --host 0.0.0.0 --port 8086
 ```
 
@@ -551,9 +551,9 @@ uvicorn app.main:app --host 0.0.0.0 --port 8086
 docker build -t vignette-story-service .
 docker run -p 8085:8085 vignette-story-service
 
-# Socialink
-docker build -t socialink-story-service .
-docker run -p 8086:8086 socialink-story-service
+# Entativa
+docker build -t entativa-story-service .
+docker run -p 8086:8086 entativa-story-service
 ```
 
 ---
@@ -565,7 +565,7 @@ docker run -p 8086:8086 socialink-story-service
 # Vignette
 curl http://localhost:8085/health
 
-# Socialink
+# Entativa
 curl http://localhost:8086/health
 ```
 
@@ -661,4 +661,4 @@ curl http://localhost:8086/health
 **Innovation**: ⭐⭐⭐⭐⭐ **Revolutionary Interactive Features**  
 **Ready**: 🚀 **Deploy & Dominate**  
 
-Both Vignette and Socialink now have **LEGENDARY** story systems! 🔥
+Both Vignette and Entativa now have **LEGENDARY** story systems! 🔥

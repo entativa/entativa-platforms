@@ -2,7 +2,7 @@
 
 ## Summary
 
-**Enterprise-grade media services implemented for Socialink and Vignette**
+**Enterprise-grade media services implemented for Entativa and Vignette**
 
 ### Implementation Status: 70% Complete
 
@@ -348,7 +348,7 @@ async fn test_full_upload_flow() {
 ### Development
 ```bash
 # Set environment variables
-export DATABASE_URL="postgresql://postgres:postgres@localhost/socialink_media"
+export DATABASE_URL="postgresql://postgres:postgres@localhost/entativa_media"
 export REDIS_URL="redis://localhost:6379"
 export STORAGE_PROVIDER="local"
 export STORAGE_LOCAL_BASE_PATH="./media_storage"
@@ -366,19 +366,19 @@ cargo run
 cargo build --release
 
 # Run
-./target/release/socialink-media-service
+./target/release/entativa-media-service
 ```
 
 ### Docker
 ```bash
-docker build -t socialink-media:latest .
+docker build -t entativa-media:latest .
 docker run -p 8083:8083 \
   -e DATABASE_URL="..." \
   -e REDIS_URL="..." \
   -e STORAGE_PROVIDER="s3" \
   -e AWS_ACCESS_KEY_ID="..." \
   -e AWS_SECRET_ACCESS_KEY="..." \
-  socialink-media:latest
+  entativa-media:latest
 ```
 
 ## API Examples

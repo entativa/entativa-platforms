@@ -18,7 +18,7 @@ A **LEGENDARY enterprise-grade notification service** with Akka actors, multi-ch
 - **Files**: 20+
 - **Port**: 8089
 
-### Socialink Notification Service
+### Entativa Notification Service
 - **Language**: Scala + Akka + Slick
 - **Lines**: 3,900+
 - **Files**: 20+
@@ -462,7 +462,7 @@ Both Platforms:
 **Status**: ✅ **100% COMPLETE**  
 **Quality**: 🏆 **Production-Grade**  
 **Lines**: 7,800+  
-**Platforms**: 2 (Vignette + Socialink)  
+**Platforms**: 2 (Vignette + Entativa)  
 **Throughput**: 10,000+ notifs/second  
 **Ready**: 🚀 **Deploy & Notify!**  
 

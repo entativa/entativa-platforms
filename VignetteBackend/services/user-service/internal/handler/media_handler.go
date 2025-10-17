@@ -5,11 +5,11 @@ import (
 	"io"
 	"net/http"
 
-	"socialink/user-service/pkg/media"
+	"entativa/user-service/pkg/media"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	pb "socialink/user-service/proto/media"
+	pb "entativa/user-service/proto/media"
 )
 
 type MediaHandler struct {

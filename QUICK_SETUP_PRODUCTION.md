@@ -65,11 +65,11 @@ redis-cli --version
 ### PostgreSQL
 ```bash
 # Create database
-createdb socialink_media
+createdb entativa_media
 createdb vignette_media
 
 # Or via SQL
-psql -U postgres -c "CREATE DATABASE socialink_media;"
+psql -U postgres -c "CREATE DATABASE entativa_media;"
 psql -U postgres -c "CREATE DATABASE vignette_media;"
 ```
 
@@ -86,9 +86,9 @@ redis-cli ping  # Should return "PONG"
 
 ## Step 4: Configure Environment
 
-### Socialink
+### Entativa
 ```bash
-cd SocialinkBackend/services/media-service
+cd EntativaBackend/services/media-service
 
 # Create .env file
 cat > .env <<EOF
@@ -99,7 +99,7 @@ SERVER_WORKERS=4
 SERVER_MAX_CONNECTIONS=25000
 
 # Database
-DATABASE_URL=postgresql://postgres:password@localhost/socialink_media
+DATABASE_URL=postgresql://postgres:password@localhost/entativa_media
 DATABASE_MAX_CONNECTIONS=100
 DATABASE_MIN_CONNECTIONS=10
 
@@ -114,7 +114,7 @@ LOCAL_STORAGE_PATH=./media_storage
 # STORAGE_PROVIDER=s3
 # AWS_ACCESS_KEY_ID=your-key
 # AWS_SECRET_ACCESS_KEY=your-secret
-# S3_BUCKET=socialink-media
+# S3_BUCKET=entativa-media
 # S3_REGION=us-east-1
 
 # Processing Limits
@@ -135,7 +135,7 @@ EOF
 ```bash
 cd VignetteBackend/services/media-service
 
-# Create .env file (similar to Socialink)
+# Create .env file (similar to Entativa)
 cat > .env <<EOF
 SERVER_HOST=0.0.0.0
 SERVER_PORT=8084
@@ -150,8 +150,8 @@ EOF
 
 ### Option A: Development
 ```bash
-# Socialink
-cd SocialinkBackend/services/media-service
+# Entativa
+cd EntativaBackend/services/media-service
 cargo run
 
 # Vignette (in another terminal)
@@ -162,17 +162,17 @@ cargo run
 ### Option B: Production
 ```bash
 # Build release
-cd SocialinkBackend/services/media-service
+cd EntativaBackend/services/media-service
 cargo build --release
 
 # Run
-./target/release/socialink-media-service
+./target/release/entativa-media-service
 ```
 
 ### Option C: Docker
 ```bash
 # Build Docker image
-docker build -t socialink-media:latest .
+docker build -t entativa-media:latest .
 
 # Run container
 docker run -d \
@@ -181,7 +181,7 @@ docker run -d \
   -e REDIS_URL="redis://..." \
   -e STORAGE_PROVIDER="s3" \
   -v /path/to/storage:/app/media_storage \
-  socialink-media:latest
+  entativa-media:latest
 ```
 
 ---
@@ -193,7 +193,7 @@ docker run -d \
 curl http://localhost:8083/api/v1/health
 
 # Expected:
-# {"status":"healthy","service":"socialink-media-service","version":"1.0.0"}
+# {"status":"healthy","service":"entativa-media-service","version":"1.0.0"}
 ```
 
 ### Test 2: Metrics
@@ -238,7 +238,7 @@ curl http://localhost:8083/api/v1/media/{media_id}
 
 ### Download Roboto Font
 ```bash
-cd SocialinkBackend/services/media-service/assets/fonts
+cd EntativaBackend/services/media-service/assets/fonts
 
 # Download
 wget https://github.com/google/fonts/raw/main/apache/roboto/static/Roboto-Regular.ttf
@@ -313,7 +313,7 @@ python3 -m pip install opencv-python
 sudo systemctl status postgresql
 
 # Test connection
-psql -U postgres -d socialink_media -c "SELECT 1;"
+psql -U postgres -d entativa_media -c "SELECT 1;"
 
 # Check credentials in .env
 cat .env | grep DATABASE_URL
@@ -346,7 +346,7 @@ wget https://github.com/google/fonts/raw/main/apache/roboto/static/Roboto-Regula
 ```yaml
 # prometheus.yml
 scrape_configs:
-  - job_name: 'socialink-media'
+  - job_name: 'entativa-media'
     static_configs:
       - targets: ['localhost:8083']
     metrics_path: '/api/v1/metrics'

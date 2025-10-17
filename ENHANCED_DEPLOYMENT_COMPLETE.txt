@@ -4,9 +4,9 @@
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-✅ SOCIALINK ENHANCED AUTHENTICATION SERVICE
+✅ ENTATIVA ENHANCED AUTHENTICATION SERVICE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  📁 Location: /workspace/SocialinkBackend/services/user-service/
+  📁 Location: /workspace/EntativaBackend/services/user-service/
   🌐 HTTP Port: 8001
   🔌 gRPC Port: 9001
   📊 Go Files: 50+ files
@@ -47,12 +47,12 @@
   📖 Implementation Summary: /workspace/META_AUTH_IMPLEMENTATION_SUMMARY.md
   📖 Quick Start Guide: /workspace/QUICK_START_GUIDE.md
   📖 Project Structure: /workspace/PROJECT_STRUCTURE.md
-  📖 Socialink README: SocialinkBackend/services/user-service/README.md
+  📖 Entativa README: EntativaBackend/services/user-service/README.md
   📖 Vignette README: VignetteBackend/services/user-service/README.md
 
 🧪 TESTING SCRIPTS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  🔵 Test Socialink: /workspace/test-socialink-auth.sh
+  🔵 Test Entativa: /workspace/test-entativa-auth.sh
   🟣 Test Vignette: /workspace/test-vignette-auth.sh
 
 🏗️ ENHANCED ARCHITECTURE
@@ -144,7 +144,7 @@ Password Reset:
 
 Media Upload:
   POST /api/v1/media/profile-picture  # Upload profile picture
-  POST /api/v1/media/cover-photo      # Upload cover photo (Socialink)
+  POST /api/v1/media/cover-photo      # Upload cover photo (Entativa)
 
 Total New Endpoints: 8 per service
 
@@ -175,7 +175,7 @@ Prerequisites (Optional Services):
   • Kafka (optional - for events)
 
 1. Setup PostgreSQL:
-   createdb socialink_users
+   createdb entativa_users
    createdb vignette_users
 
 2. Setup Redis (Optional):
@@ -188,11 +188,11 @@ Prerequisites (Optional Services):
    docker run -p 9092:9092 apache/kafka
 
 5. Configure Services:
-   cd /workspace/SocialinkBackend/services/user-service
+   cd /workspace/EntativaBackend/services/user-service
    cp .env.example .env
    # Edit .env with your configuration
 
-6. Start Socialink:
+6. Start Entativa:
    ./run.sh
 
 7. Start Vignette:
@@ -205,7 +205,7 @@ Prerequisites (Optional Services):
 
 📊 PROJECT STATISTICS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  • Total Go Files: 105+ (50+ Socialink + 55+ Vignette)
+  • Total Go Files: 105+ (50+ Entativa + 55+ Vignette)
   • Lines of Code: 8,000+
   • Services: 2 complete microservices
   • API Endpoints: 26 (13 per service)

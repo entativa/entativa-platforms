@@ -413,7 +413,7 @@ curl http://localhost:8089/health
 
 ### Ports
 - **Vignette**: 8089
-- **Socialink**: 8090
+- **Entativa**: 8090
 
 ### Environment
 ```env

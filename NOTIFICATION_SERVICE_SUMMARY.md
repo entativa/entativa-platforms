@@ -565,8 +565,8 @@ TOTAL SO FAR: ~410 lines of Scala
 5. ✅ Create API routes
 6. ✅ Create main app
 7. ✅ Add configuration
-8. ✅ Copy to Socialink
-9. ✅ Rebrand for Socialink
+8. ✅ Copy to Entativa
+9. ✅ Rebrand for Entativa
 
 ---
 

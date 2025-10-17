@@ -37,7 +37,7 @@ ALL PARTICIPANTS LINK BACK TO ALICE
 - **Files**: 20+ per platform
 - **Lines**: ~5,000 total
 - **Tables**: 8 (Takes, BTT, Templates, Trends, + base posting)
-- **Platforms**: Socialink + Vignette
+- **Platforms**: Entativa + Vignette
 
 ### Key Innovation
 **Deep-linking to originators** - Every trend links back to who started it. This is **FAIR ATTRIBUTION** that TikTok doesn't have!
@@ -101,7 +101,7 @@ Production-grade ephemeral story service with interactive stickers and analytics
 - **Tech**: MongoDB + Redis + FastAPI + Motor
 - **APIs**: 20+ endpoints per service
 - **Background**: Auto-expiration service
-- **Platforms**: Socialink + Vignette
+- **Platforms**: Entativa + Vignette
 
 ### Key Innovation
 **Interactive stickers** - 6 different types for maximum engagement. Instagram has 4, we have 6!
@@ -112,8 +112,8 @@ Production-grade ephemeral story service with interactive stickers and analytics
 
 ### Total Services Populated
 ✅ **3 services** across **2 platforms**
-- Post Service (with Takes) - Socialink + Vignette
-- Story Service - Socialink + Vignette
+- Post Service (with Takes) - Entativa + Vignette
+- Story Service - Entativa + Vignette
 
 ### Code Volume
 ```
@@ -200,7 +200,7 @@ TOTAL:
 - Story stickers
 - Highlights
 
-### Socialink (Facebook-like)
+### Entativa (Facebook-like)
 - Text + media posts
 - Facebook-style reactions
 - Nested comments
@@ -233,7 +233,7 @@ Tables:
 - posts
 - comments
 - likes
-- shares (Socialink)
+- shares (Entativa)
 - saves (Vignette)
 - takes
 - behind_the_takes
@@ -276,7 +276,7 @@ Collections:
 - Post Service: 8084
 - **Story Service: 8085** ✨ NEW
 
-### Socialink
+### Entativa
 - Media Service: 8080 (HTTP), 50051 (gRPC)
 - User Service: 8082
 - Post Service: 8083
@@ -413,8 +413,8 @@ Redis caching + optimized indexes = **FAST**.
 
 ### Post Services
 ```bash
-# Socialink
-cd SocialinkBackend/services/post-service
+# Entativa
+cd EntativaBackend/services/post-service
 go run cmd/api/main.go
 
 # Vignette
@@ -424,8 +424,8 @@ go run cmd/api/main.go
 
 ### Story Services
 ```bash
-# Socialink
-cd SocialinkBackend/services/story-service
+# Entativa
+cd EntativaBackend/services/story-service
 uvicorn app.main:app --port 8086
 
 # Vignette
@@ -486,8 +486,8 @@ uvicorn app.main:app --port 8085
 ## 🎉 Final Stats
 
 ### Services Built
-✅ **2 Post Services** (Socialink + Vignette)  
-✅ **2 Story Services** (Socialink + Vignette)  
+✅ **2 Post Services** (Entativa + Vignette)  
+✅ **2 Story Services** (Entativa + Vignette)  
 ✅ **4 services total** (across 2 platforms)  
 
 ### Code Written
@@ -527,7 +527,7 @@ uvicorn app.main:app --port 8085
 
 ## 🚀 Ready to Deploy
 
-Both Socialink and Vignette now have:
+Both Entativa and Vignette now have:
 - ✅ Full posting capabilities
 - ✅ Revolutionary Takes system
 - ✅ **Epic story features**

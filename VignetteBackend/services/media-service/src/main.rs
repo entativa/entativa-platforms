@@ -35,7 +35,7 @@ async fn main() -> std::io::Result<()> {
         .with(tracing_subscriber::fmt::layer().json())
         .init();
 
-    info!("Starting Socialink Media Service");
+    info!("Starting Entativa Media Service");
 
     // Load configuration
     let config = Config::from_env().unwrap_or_else(|_| {

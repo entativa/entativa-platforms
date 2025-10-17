@@ -8,7 +8,7 @@
 
 We've built **TWO complete social media platforms** with **27 microservices**, **enterprise-grade infrastructure**, and **production-ready code**:
 
-- **Socialink** - Facebook-like platform (14 services)
+- **Entativa** - Facebook-like platform (14 services)
 - **Vignette** - Instagram-like platform (13 services)
 
 **Total codebase**: 100,000+ lines across 4 programming languages  
@@ -21,7 +21,7 @@ We've built **TWO complete social media platforms** with **27 microservices**, *
 ```
 ╔══════════════════════════════════════════════════════════════════╗
 ║                    ENTATIVA PLATFORM                             ║
-║          (Socialink + Vignette Combined)                         ║
+║          (Entativa + Vignette Combined)                         ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
 ║  MICROSERVICES:        27 services                               ║
@@ -52,7 +52,7 @@ We've built **TWO complete social media platforms** with **27 microservices**, *
 
 ### **Core Social Features** (Both Platforms)
 
-| Feature | Socialink | Vignette | Details |
+| Feature | Entativa | Vignette | Details |
 |---------|-----------|----------|---------|
 | **User Profiles** | ✅ | ✅ | Profile management, bio, photos |
 | **Authentication** | ✅ | ✅ | JWT, 2FA, OAuth |
@@ -74,7 +74,7 @@ We've built **TWO complete social media platforms** with **27 microservices**, *
 
 ### **Platform-Specific Features**
 
-#### **Socialink-Only** (Facebook-style):
+#### **Entativa-Only** (Facebook-style):
 | Feature | Status | Details |
 |---------|--------|---------|
 | **Friend Requests** | ✅ | Max 1,500 friends (better than FB!) |
@@ -163,7 +163,7 @@ CDN:                     ✅ Ready for integration
 - Community Services (2)
 - Search Services (2)
 - Streaming Services (2)
-- Event Service (1 - Socialink)
+- Event Service (1 - Entativa)
 - Creator Service (1 - Vignette)
 - Settings Services (2)
 
@@ -235,7 +235,7 @@ CDN:                     ✅ Ready for integration
 
 ## 🎨 Unique Features
 
-### **Socialink (Better than Facebook):**
+### **Entativa (Better than Facebook):**
 1. **Friend Limit**: 1,500 (not 5,000!)
 2. **Spam Prevention**: Daily/pending request limits
 3. **Auto-Accept**: Smart mutual request handling
@@ -262,8 +262,8 @@ make logs        # View logs
 make test        # Run tests
 make migrate     # Run migrations
 
-# Start Socialink
-cd SocialinkBackend
+# Start Entativa
+cd EntativaBackend
 make up
 ```
 
@@ -297,7 +297,7 @@ make health      # Check all services
 ```bash
 # Deploy
 kubectl apply -f infrastructure/kubernetes/ -n vignette
-kubectl apply -f infrastructure/kubernetes/ -n socialink
+kubectl apply -f infrastructure/kubernetes/ -n entativa
 
 # Monitor
 kubectl get pods -n vignette
@@ -403,7 +403,7 @@ HPA Configuration:
 ✅ Recommendation Svc   - READY (Python)
 ```
 
-### **Socialink:**
+### **Entativa:**
 ```
 ✅ API Gateway          - BUILD SUCCESS
 ✅ Event Service        - BUILD SUCCESS
@@ -579,7 +579,7 @@ kubectl rollout undo deployment/api-gateway -n vignette
 ## 🎊 Final Summary
 
 **What We Built:**
-- 🏗️ **2 complete platforms** (Socialink + Vignette)
+- 🏗️ **2 complete platforms** (Entativa + Vignette)
 - 📱 **27 microservices** (Go, Rust, Python, Scala)
 - 🔐 **Signal-level security** (E2EE messaging)
 - 📊 **Enterprise infrastructure** (Docker, K8s, CI/CD)

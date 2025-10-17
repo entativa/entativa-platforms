@@ -1,19 +1,19 @@
 # Entativa Social Media Platform - Services Complete 🚀
 
-## Production-Ready Microservices for Socialink & Vignette
+## Production-Ready Microservices for Entativa & Vignette
 
 ---
 
 ## 🎉 Overview
 
-**8 production-ready microservices** across **2 platforms** (Socialink & Vignette) with **34,300+ lines** of enterprise-grade code!
+**8 production-ready microservices** across **2 platforms** (Entativa & Vignette) with **34,300+ lines** of enterprise-grade code!
 
 ---
 
 ## ✅ Services Implemented
 
 ### 1. **Post Service** 🏆
-**Platforms**: Socialink (8083) + Vignette (8084)  
+**Platforms**: Entativa (8083) + Vignette (8084)  
 **Tech**: Go + Gin + PostgreSQL + Redis + Kafka  
 **Lines**: 10,000+  
 
@@ -21,7 +21,7 @@
 - Traditional posts (text + media)
 - Comments with infinite nesting
 - Likes/reactions
-- Shares (Socialink) / Saves (Vignette)
+- Shares (Entativa) / Saves (Vignette)
 - **Takes** - Short-form video
 - **Behind-the-Takes (BTT)** - Educational "how-to" content
 - **Takes Templates** - Reusable creative templates
@@ -35,7 +35,7 @@
 ---
 
 ### 2. **Story Service** 🏆
-**Platforms**: Socialink (8086) + Vignette (8085)  
+**Platforms**: Entativa (8086) + Vignette (8085)  
 **Tech**: Python + FastAPI + MongoDB + Redis  
 **Lines**: 7,000+  
 
@@ -60,7 +60,7 @@
 ---
 
 ### 3. **Search Service** 🏆
-**Platforms**: Socialink (8088) + Vignette (8087)  
+**Platforms**: Entativa (8088) + Vignette (8087)  
 **Tech**: Go + Elasticsearch + Redis  
 **Lines**: 9,500+  
 
@@ -87,7 +87,7 @@
 ---
 
 ### 4. **Notification Service** 🏆
-**Platforms**: Socialink (8090) + Vignette (8089)  
+**Platforms**: Entativa (8090) + Vignette (8089)  
 **Tech**: Scala + Akka + PostgreSQL + Redis  
 **Lines**: 7,800+  
 
@@ -192,7 +192,7 @@ Search users, posts, Takes, hashtags, locations in one query
                           |
         ┌─────────────────┴─────────────────┐
         |                                   |
-   SOCIALINK                            VIGNETTE
+   ENTATIVA                            VIGNETTE
   (Facebook-like)                    (Instagram-like)
         |                                   |
    ┌────┴────┐                         ┌────┴────┐
@@ -214,7 +214,7 @@ Search users, posts, Takes, hashtags, locations in one query
 Posts:     /api/v1/posts/*
 Comments:  /api/v1/comments/*
 Likes:     /api/v1/likes/*
-Shares:    /api/v1/shares/* (Socialink)
+Shares:    /api/v1/shares/* (Entativa)
 Saves:     /api/v1/saves/* (Vignette)
 Takes:     /api/v1/takes/*
 BTT:       /api/v1/takes/{id}/btt
@@ -321,22 +321,22 @@ cd VignetteBackend/services/notification-service
 sbt run  # Port 8089
 ```
 
-### Socialink Services
+### Entativa Services
 ```bash
 # Post Service
-cd SocialinkBackend/services/post-service
+cd EntativaBackend/services/post-service
 go run cmd/api/main.go  # Port 8083
 
 # Story Service
-cd SocialinkBackend/services/story-service
+cd EntativaBackend/services/story-service
 uvicorn app.main:app --port 8086
 
 # Search Service
-cd SocialinkBackend/services/search-service
+cd EntativaBackend/services/search-service
 go run cmd/api/main.go  # Port 8088
 
 # Notification Service
-cd SocialinkBackend/services/notification-service
+cd EntativaBackend/services/notification-service
 sbt run  # Port 8090
 ```
 
@@ -496,7 +496,7 @@ Search Service:       http://localhost:8087
 Notification Service: http://localhost:8089
 ```
 
-### Socialink
+### Entativa
 ```
 Post Service:         http://localhost:8083
 Story Service:        http://localhost:8086
@@ -536,7 +536,7 @@ Notification Service: http://localhost:8090
 ║                                                ║
 ║              ✅ ALL SERVICES COMPLETE          ║
 ║                                                ║
-║   Socialink:  4 services ✅                    ║
+║   Entativa:  4 services ✅                    ║
 ║   Vignette:   4 services ✅                    ║
 ║                                                ║
 ║   Total Services:     8                        ║
@@ -579,7 +579,7 @@ Notification Service: http://localhost:8090
 
 **Built with ❤️ by the Entativa team**  
 **Company**: Entativa  
-**Platforms**: Socialink & Vignette  
+**Platforms**: Entativa & Vignette  
 **Status**: Production-Ready  
 **Quality**: Enterprise-Grade  
 **Innovation**: Revolutionary  

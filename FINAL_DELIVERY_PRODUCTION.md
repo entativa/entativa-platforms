@@ -12,7 +12,7 @@
 
 ### Code Metrics
 ```
-Socialink Media Service:
+Entativa Media Service:
 ├── Rust Files: 27 files
 ├── Total Lines: 5,488 lines
 ├── Placeholders: 0 (ZERO)

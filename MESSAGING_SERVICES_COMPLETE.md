@@ -6,7 +6,7 @@
 
 ## 🎉 WHAT WE ACCOMPLISHED
 
-Built **TWO complete Signal-level E2EE messaging services** for Socialink and Vignette!
+Built **TWO complete Signal-level E2EE messaging services** for Entativa and Vignette!
 
 This is **CRITICAL** for user trust and retention - messaging is the #1 use case! 🔥
 
@@ -22,7 +22,7 @@ This is **CRITICAL** for user trust and retention - messaging is the #1 use case
 - **Tables**: 16
 - **Port**: 8091
 
-### Socialink Messaging Service
+### Entativa Messaging Service
 - **Language**: Rust + Actix
 - **Lines**: 4,700+
 - **Files**: 23 Rust files
@@ -253,7 +253,7 @@ This is **CRITICAL** for user trust and retention - messaging is the #1 use case
 ╔═══════════════════════════════════════════════════════════╗
 ║          MESSAGING SERVICES COMPLETE                      ║
 ╠═══════════════════════════════════════════════════════════╣
-║  Platforms:          2 (Socialink + Vignette)             ║
+║  Platforms:          2 (Entativa + Vignette)             ║
 ║  Total Lines:        9,400+                               ║
 ║  Rust Files:         46 (23 per platform)                 ║
 ║  Services:           12 (6 per platform)                  ║
@@ -465,17 +465,17 @@ DATABASE_URL=postgresql://localhost:5432/vignette_messaging
 REDIS_URL=redis://localhost:6379
 ```
 
-### Socialink
+### Entativa
 ```bash
-cd SocialinkBackend/services/messaging-service
+cd EntativaBackend/services/messaging-service
 cargo build --release
-PORT=8092 ./target/release/socialink-messaging-service
+PORT=8092 ./target/release/entativa-messaging-service
 ```
 
 **Config**:
 ```env
 PORT=8092
-DATABASE_URL=postgresql://localhost:5432/socialink_messaging
+DATABASE_URL=postgresql://localhost:5432/entativa_messaging
 REDIS_URL=redis://localhost:6379
 ```
 
@@ -644,7 +644,7 @@ WebSocket: New message event
 ║                                                           ║
 ║         🔐 MESSAGING SERVICES 100% COMPLETE! 🔐           ║
 ║                                                           ║
-║   Platforms:         2 (Socialink + Vignette)             ║
+║   Platforms:         2 (Entativa + Vignette)             ║
 ║   Total Code:        9,400+ lines                         ║
 ║   API Endpoints:     80+ (40 per platform)                ║
 ║   Database Tables:   32 (16 per platform)                 ║
@@ -676,7 +676,7 @@ WebSocket: New message event
 - ✅ **Better groups** (1,500 vs WhatsApp's 1,024)
 
 ### Platform Integration
-- ✅ **Socialink** (Facebook-like) - Complete messaging
+- ✅ **Entativa** (Facebook-like) - Complete messaging
 - ✅ **Vignette** (Instagram-like) - Complete messaging
 - ✅ **Unified** - Same security across both
 - ✅ **Integrated** - Works with posts, stories, notifications
@@ -708,7 +708,7 @@ WebSocket: New message event
 ---
 
 **Built with ❤️ by Entativa**  
-**Platforms**: Socialink & Vignette  
+**Platforms**: Entativa & Vignette  
 **Security**: Signal Protocol + MLS  
 **Status**: Production-Ready  
 

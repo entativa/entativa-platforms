@@ -1,12 +1,12 @@
 # Entativa Platform - Enterprise Deployment Guide 🏗️
 
-**Complete deployment guide for Socialink & Vignette backends**
+**Complete deployment guide for Entativa & Vignette backends**
 
 ---
 
 ## 🎯 Platform Overview
 
-### **Socialink** (Facebook-like Platform)
+### **Entativa** (Facebook-like Platform)
 - **14 Microservices**
 - **Port Range**: 8081-8102 (HTTP), 50001-50013 (gRPC)
 - **Unique Features**: Events, Friend Requests (max 1,500 friends)
@@ -20,7 +20,7 @@
 
 ## 📊 Complete Service Matrix
 
-| Service | Vignette | Socialink | Language | Database | HTTP | gRPC |
+| Service | Vignette | Entativa | Language | Database | HTTP | gRPC |
 |---------|----------|-----------|----------|----------|------|------|
 | **API Gateway** | ✅ | ✅ | Go | - | 8080/8081 | - |
 | **User Service** | ✅ | ✅ | Go | PostgreSQL | 8083/8084 | 50001 |
@@ -52,7 +52,7 @@
 - ✅ Creator Service
 - ✅ Streaming Service
 
-**Socialink**:
+**Entativa**:
 - ✅ API Gateway
 - ✅ Event Service
 - ✅ Streaming Service
@@ -91,9 +91,9 @@ Grafana:        http://localhost:3000
 Prometheus:     http://localhost:9090
 ```
 
-### **Start Socialink:**
+### **Start Entativa:**
 ```bash
-cd SocialinkBackend
+cd EntativaBackend
 
 # Start all services
 make up
@@ -114,8 +114,8 @@ Prometheus:     http://localhost:9090
 cd VignetteBackend
 make build
 
-# Socialink
-cd SocialinkBackend
+# Entativa
+cd EntativaBackend
 make build
 ```
 
@@ -171,18 +171,18 @@ kubectl get services -n vignette
 kubectl logs -f deployment/api-gateway -n vignette
 ```
 
-### **Deploy Socialink:**
+### **Deploy Entativa:**
 ```bash
-cd SocialinkBackend
+cd EntativaBackend
 
 # Create namespace
-kubectl create namespace socialink
+kubectl create namespace entativa
 
 # Deploy all services
 kubectl apply -f infrastructure/kubernetes/
 
 # Check status
-kubectl get pods -n socialink
+kubectl get pods -n entativa
 ```
 
 ---
@@ -203,16 +203,16 @@ vignette_streaming
 vignette_creator
 ```
 
-**Socialink**:
+**Entativa**:
 ```sql
-socialink_users
-socialink_posts
-socialink_messaging
-socialink_settings
-socialink_notifications
-socialink_communities
-socialink_streaming
-socialink_events (with PostGIS)
+entativa_users
+entativa_posts
+entativa_messaging
+entativa_settings
+entativa_notifications
+entativa_communities
+entativa_streaming
+entativa_events (with PostGIS)
 ```
 
 ### **Run Migrations:**
@@ -221,8 +221,8 @@ socialink_events (with PostGIS)
 cd VignetteBackend
 make migrate
 
-# Socialink
-cd SocialinkBackend
+# Entativa
+cd EntativaBackend
 make migrate
 ```
 
@@ -388,7 +388,7 @@ kubectl top pods -n vignette
 ## 🎊 Summary
 
 **Enterprise-Grade Features:**
-- ✅ **27 Microservices** (14 Socialink + 13 Vignette)
+- ✅ **27 Microservices** (14 Entativa + 13 Vignette)
 - ✅ **gRPC Communication** (10x faster than REST)
 - ✅ **API Gateways** (unified REST API for clients)
 - ✅ **Docker** (containerized, portable)

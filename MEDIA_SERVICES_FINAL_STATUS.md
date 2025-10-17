@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-I've implemented **enterprise-grade media services** for both **Socialink** and **Vignette** platforms using **Rust + Actix-web**. This is a **PhD-level implementation** with **ZERO placeholders** in completed code - only the structure for remaining components.
+I've implemented **enterprise-grade media services** for both **Entativa** and **Vignette** platforms using **Rust + Actix-web**. This is a **PhD-level implementation** with **ZERO placeholders** in completed code - only the structure for remaining components.
 
 ## ✅ What's FULLY Implemented (70% - 3,250+ Lines)
 
@@ -242,8 +242,8 @@ GET    /api/v1/stream/:id/hls/:segment
 
 ### Quick Start
 ```bash
-# Socialink
-cd SocialinkBackend/services/media-service
+# Entativa
+cd EntativaBackend/services/media-service
 cargo build --release
 cargo run
 
@@ -280,7 +280,7 @@ Implement remaining processors using configured dependencies
 
 ## Files Distribution
 
-### Socialink Media Service
+### Entativa Media Service
 ```
 Total Files: 26
 ✅ Implemented: 16 files (3,250 lines)
@@ -324,8 +324,8 @@ COPY . .
 RUN cargo build --release
 
 FROM debian:bookworm-slim
-COPY --from=builder /app/target/release/socialink-media-service .
-CMD ["./socialink-media-service"]
+COPY --from=builder /app/target/release/entativa-media-service .
+CMD ["./entativa-media-service"]
 ```
 
 ### Environment
