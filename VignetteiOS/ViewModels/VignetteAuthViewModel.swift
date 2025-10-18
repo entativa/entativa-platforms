@@ -3,41 +3,38 @@ import SwiftUI
 import Combine
 import LocalAuthentication
 
-/// Authentication ViewModel for Entativa
+/// Authentication ViewModel for Vignette
 @MainActor
-class AuthViewModel: ObservableObject {
+class VignetteAuthViewModel: ObservableObject {
     // MARK: - Published Properties
     
     @Published var isAuthenticated = false
-    @Published var currentUser: AuthAPIClient.AuthResponse.User?
+    @Published var currentUser: VignetteAuthAPIClient.AuthResponse.User?
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var showError = false
     
     // Sign up form fields
-    @Published var signUpFirstName = ""
-    @Published var signUpLastName = ""
+    @Published var signUpUsername = ""
     @Published var signUpEmail = ""
+    @Published var signUpFullName = ""
     @Published var signUpPassword = ""
-    @Published var signUpBirthday = Date()
-    @Published var signUpGender = "prefer_not_to_say"
     
     // Login form fields
-    @Published var loginEmailOrUsername = ""
+    @Published var loginUsernameOrEmail = ""
     @Published var loginPassword = ""
     
     // Validation
-    @Published var firstNameError: String?
-    @Published var lastNameError: String?
+    @Published var usernameError: String?
     @Published var emailError: String?
+    @Published var fullNameError: String?
     @Published var passwordError: String?
-    @Published var birthdayError: String?
     
     // Biometric auth
     @Published var biometricAuthAvailable = false
     @Published var biometricType: LABiometryType = .none
     
-    private let apiClient = AuthAPIClient.shared
+    private let apiClient = VignetteAuthAPIClient.shared
     private let context = LAContext()
     private var cancellables = Set<AnyCancellable>()
     
@@ -77,19 +74,17 @@ class AuthViewModel: ObservableObject {
         
         do {
             let response = try await apiClient.signUp(
-                firstName: signUpFirstName.trimmingCharacters(in: .whitespaces),
-                lastName: signUpLastName.trimmingCharacters(in: .whitespaces),
+                username: signUpUsername.trimmingCharacters(in: .whitespaces).lowercased(),
                 email: signUpEmail.trimmingCharacters(in: .whitespaces).lowercased(),
-                password: signUpPassword,
-                birthday: signUpBirthday,
-                gender: signUpGender
+                fullName: signUpFullName.trimmingCharacters(in: .whitespaces),
+                password: signUpPassword
             )
             
             self.currentUser = response.data?.user
             self.isAuthenticated = true
             self.clearSignUpForm()
             
-        } catch let error as AuthError {
+        } catch let error as VignetteAuthError {
             self.errorMessage = error.errorDescription
             self.showError = true
         } catch {
@@ -104,35 +99,30 @@ class AuthViewModel: ObservableObject {
         var isValid = true
         
         // Reset errors
-        firstNameError = nil
-        lastNameError = nil
+        usernameError = nil
         emailError = nil
+        fullNameError = nil
         passwordError = nil
-        birthdayError = nil
         
-        // Validate first name
-        let trimmedFirstName = signUpFirstName.trimmingCharacters(in: .whitespaces)
-        if trimmedFirstName.isEmpty {
-            firstNameError = "First name is required"
+        // Validate username (Instagram-style rules)
+        let trimmedUsername = signUpUsername.trimmingCharacters(in: .whitespaces).lowercased()
+        if trimmedUsername.isEmpty {
+            usernameError = "Username is required"
             isValid = false
-        } else if trimmedFirstName.count < 2 {
-            firstNameError = "First name must be at least 2 characters"
+        } else if trimmedUsername.count < 3 {
+            usernameError = "Username must be at least 3 characters"
             isValid = false
-        } else if !trimmedFirstName.allSatisfy({ $0.isLetter || $0.isWhitespace || $0 == "-" || $0 == "'" }) {
-            firstNameError = "First name can only contain letters"
+        } else if trimmedUsername.count > 30 {
+            usernameError = "Username must be 30 characters or less"
             isValid = false
-        }
-        
-        // Validate last name
-        let trimmedLastName = signUpLastName.trimmingCharacters(in: .whitespaces)
-        if trimmedLastName.isEmpty {
-            lastNameError = "Last name is required"
+        } else if !isValidUsername(trimmedUsername) {
+            usernameError = "Username can only contain letters, numbers, periods, and underscores"
             isValid = false
-        } else if trimmedLastName.count < 2 {
-            lastNameError = "Last name must be at least 2 characters"
+        } else if trimmedUsername.hasPrefix(".") || trimmedUsername.hasSuffix(".") {
+            usernameError = "Username cannot start or end with a period"
             isValid = false
-        } else if !trimmedLastName.allSatisfy({ $0.isLetter || $0.isWhitespace || $0 == "-" || $0 == "'" }) {
-            lastNameError = "Last name can only contain letters"
+        } else if trimmedUsername.contains("..") {
+            usernameError = "Username cannot have consecutive periods"
             isValid = false
         }
         
@@ -143,6 +133,16 @@ class AuthViewModel: ObservableObject {
             isValid = false
         } else if !isValidEmail(trimmedEmail) {
             emailError = "Please enter a valid email address"
+            isValid = false
+        }
+        
+        // Validate full name
+        let trimmedFullName = signUpFullName.trimmingCharacters(in: .whitespaces)
+        if trimmedFullName.isEmpty {
+            fullNameError = "Full name is required"
+            isValid = false
+        } else if trimmedFullName.count < 2 {
+            fullNameError = "Full name must be at least 2 characters"
             isValid = false
         }
         
@@ -164,16 +164,6 @@ class AuthViewModel: ObservableObject {
             isValid = false
         }
         
-        // Validate age (must be 13+)
-        let age = Calendar.current.dateComponents([.year], from: signUpBirthday, to: Date()).year ?? 0
-        if age < 13 {
-            birthdayError = "You must be at least 13 years old to sign up"
-            isValid = false
-        } else if age > 120 {
-            birthdayError = "Please enter a valid birthday"
-            isValid = false
-        }
-        
         return isValid
     }
     
@@ -191,7 +181,7 @@ class AuthViewModel: ObservableObject {
         
         do {
             let response = try await apiClient.login(
-                emailOrUsername: loginEmailOrUsername.trimmingCharacters(in: .whitespaces),
+                usernameOrEmail: loginUsernameOrEmail.trimmingCharacters(in: .whitespaces),
                 password: loginPassword
             )
             
@@ -199,7 +189,7 @@ class AuthViewModel: ObservableObject {
             self.isAuthenticated = true
             self.clearLoginForm()
             
-        } catch let error as AuthError {
+        } catch let error as VignetteAuthError {
             self.errorMessage = error.errorDescription
             self.showError = true
         } catch {
@@ -211,8 +201,8 @@ class AuthViewModel: ObservableObject {
     }
     
     func validateLoginForm() -> Bool {
-        if loginEmailOrUsername.trimmingCharacters(in: .whitespaces).isEmpty {
-            errorMessage = "Please enter your email or username"
+        if loginUsernameOrEmail.trimmingCharacters(in: .whitespaces).isEmpty {
+            errorMessage = "Please enter your username or email"
             showError = true
             return false
         }
@@ -279,42 +269,35 @@ class AuthViewModel: ObservableObject {
     // MARK: - Form Management
     
     func clearSignUpForm() {
-        signUpFirstName = ""
-        signUpLastName = ""
+        signUpUsername = ""
         signUpEmail = ""
+        signUpFullName = ""
         signUpPassword = ""
-        signUpBirthday = Date()
-        signUpGender = "prefer_not_to_say"
         
-        firstNameError = nil
-        lastNameError = nil
+        usernameError = nil
         emailError = nil
+        fullNameError = nil
         passwordError = nil
-        birthdayError = nil
     }
     
     func clearLoginForm() {
-        loginEmailOrUsername = ""
+        loginUsernameOrEmail = ""
         loginPassword = ""
     }
     
     // MARK: - Validation Helpers
     
+    func isValidUsername(_ username: String) -> Bool {
+        // Instagram-style username validation
+        // Only letters, numbers, periods, and underscores
+        let usernameRegex = "^[a-zA-Z0-9._]+$"
+        let usernamePredicate = NSPredicate(format:"SELF MATCHES %@", usernameRegex)
+        return usernamePredicate.evaluate(with: username)
+    }
+    
     func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailRegex)
         return emailPredicate.evaluate(with: email)
-    }
-    
-    // MARK: - Gender Options
-    
-    var genderOptions: [(value: String, label: String)] {
-        [
-            ("male", "Male"),
-            ("female", "Female"),
-            ("non_binary", "Non-binary"),
-            ("prefer_not_to_say", "Prefer not to say"),
-            ("custom", "Custom")
-        ]
     }
 }
