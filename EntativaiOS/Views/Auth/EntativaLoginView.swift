@@ -6,6 +6,8 @@ struct EntativaLoginView: View {
     @StateObject private var viewModel = AuthViewModel()
     @State private var showSignUp = false
     @State private var showPassword = false
+    @State private var showSignInWithVignette = false
+    @State private var showForgotPassword = false
     @FocusState private var focusedField: Field?
     
     enum Field: Hashable {
@@ -48,11 +50,15 @@ struct EntativaLoginView: View {
                         .padding(.horizontal, 24)
                         .padding(.vertical, 28)
                         
+                        // Sign in with Vignette
+                        signInWithVignetteButton
+                            .padding(.horizontal, 24)
+                        
                         // Biometric login (if available)
                         if viewModel.biometricAuthAvailable {
                             biometricLoginButton
                                 .padding(.horizontal, 24)
-                                .padding(.bottom, 20)
+                                .padding(.top, 12)
                         }
                         
                         // Sign up prompt
@@ -77,6 +83,14 @@ struct EntativaLoginView: View {
             }
             .fullScreenCover(isPresented: $showSignUp) {
                 EntativaSignUpView()
+            }
+            .fullScreenCover(isPresented: $showSignInWithVignette) {
+                SignInWithVignetteView { token in
+                    viewModel.checkAuthenticationStatus()
+                }
+            }
+            .sheet(isPresented: $showForgotPassword) {
+                EntativaForgotPasswordView()
             }
         }
     }
@@ -143,7 +157,7 @@ struct EntativaLoginView: View {
             HStack {
                 Spacer()
                 Button {
-                    // TODO: Implement forgot password
+                    showForgotPassword = true
                 } label: {
                     Text("Forgotten password?")
                         .entativaLabelMedium()
@@ -172,6 +186,48 @@ struct EntativaLoginView: View {
             }
             .disabled(viewModel.isLoading)
             .padding(.top, 12)
+        }
+    }
+    
+    // MARK: - Sign in with Vignette Button
+    
+    private var signInWithVignetteButton: some View {
+        Button {
+            showSignInWithVignette = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "v.square.fill")
+                    .font(.system(size: 20))
+                
+                Text("Sign in with Vignette")
+                    .entativaButtonMedium()
+            }
+            .foregroundColor(VignetteAccentColors.moonstone)
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(VignetteAccentColors.lightBlue)
+            .cornerRadius(8)
+        }
+    }
+    
+    // MARK: - Sign in with Vignette Button
+    
+    private var signInWithVignetteButton: some View {
+        Button {
+            showSignInWithVignette = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "v.square.fill")
+                    .font(.system(size: 20))
+                
+                Text("Sign in with Vignette")
+                    .entativaButtonMedium()
+            }
+            .foregroundColor(VignetteAccentColors.moonstone)
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(VignetteAccentColors.lightBlue)
+            .cornerRadius(8)
         }
     }
     

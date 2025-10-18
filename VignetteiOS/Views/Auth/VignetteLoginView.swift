@@ -6,6 +6,8 @@ struct VignetteLoginView: View {
     @StateObject private var viewModel = VignetteAuthViewModel()
     @State private var showSignUp = false
     @State private var showPassword = false
+    @State private var showSignInWithEntativa = false
+    @State private var showForgotPassword = false
     @FocusState private var focusedField: Field?
     
     enum Field: Hashable {
@@ -164,19 +166,24 @@ struct VignetteLoginView: View {
             }
             .padding(.vertical, 24)
             
-            // Facebook login (placeholder)
-            Button {
-                // TODO: Implement Facebook OAuth
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "f.square.fill")
-                        .font(.system(size: 20))
-                    
-                    Text("Log in with Facebook")
-                        .vignetteButtonMedium()
+                // Sign in with Entativa
+                Button {
+                    showSignInWithEntativa = true
+                } label: {
+                    HStack(spacing: 8) {
+                        Text("e")
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .italic()
+                        
+                        Text("Sign in with Entativa")
+                            .vignetteButtonMedium()
+                    }
+                    .foregroundColor(EntativaColors.primaryBlue)
                 }
-                .foregroundColor(VignetteColors.moonstone)
-            }
+                .frame(maxWidth: .infinity)
+                .frame(height: 44)
+                .background(EntativaColors.buttonPrimaryDeemph)
+                .cornerRadius(8)
         }
     }
     
@@ -184,7 +191,7 @@ struct VignetteLoginView: View {
     
     private var forgotPasswordLink: some View {
         Button {
-            // TODO: Implement forgot password
+            showForgotPassword = true
         } label: {
             Text("Forgot password?")
                 .vignetteLabelMedium()
