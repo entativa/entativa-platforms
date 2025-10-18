@@ -13,22 +13,21 @@ This document serves as the comprehensive reference for the **Neo Qiss (@neoqiss
 
 ---
 
-## 👑 Founder Badge
+## 👑 Founder Check
 
 ### Visual Identity
-- **Badge Type:** Crown (👑) or Diamond checkmark (💎)
-- **Color:** Platinum/Gold gradient
-- **Animation:** Subtle shimmer/glow effect
+- **Badge Type:** a subtle variant of the Entativa checkmark
 - **Display:** Always visible next to username
-- **Tooltip:** "Founder & CEO of Entativa"
+- **Tooltip:**
+" 💼 Coding so bad it loops back around to genius (citation needed)."
+" {Entativalogo} This account is affiliated with Entativa."
+" 🎂  Hatched: 07.22-J1407B-2099" 
 - **Platforms:** Entativa, Vignette, Sonet
 
 ### Technical Implementation
 ```json
 {
   "badge_type": "founder",
-  "badge_icon": "crown",
-  "badge_color": "platinum_gold_gradient",
   "badge_priority": 999,
   "is_transferable": false,
   "account_id": "neoqiss_uuid"
