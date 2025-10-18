@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"vignette/user-service/internal/model"
-	"vignette/user-service/internal/repository"
+	"socialink/user-service/internal/model"
+	"socialink/user-service/internal/repository"
 
 	"github.com/google/uuid"
 )
@@ -43,19 +43,23 @@ func (s *ProfileService) GetOrCreateProfile(ctx context.Context, userID uuid.UUI
 // createDefaultProfile creates a profile with default settings
 func (s *ProfileService) createDefaultProfile(ctx context.Context, userID uuid.UUID) (*model.Profile, error) {
 	now := time.Now()
-	personal := "personal"
 	profile := &model.Profile{
-		ID:                  uuid.New(),
-		UserID:              userID,
-		Category:            &personal,
-		LinkInBio:           []model.LinkInBio{},
-		Highlights:          []model.StoryHighlight{},
-		PinnedPosts:         []string{},
-		ProfileBadges:       []string{},
-		ProfileViews:        0,
-		ProfileViewsEnabled: true,
-		CreatedAt:           now,
-		UpdatedAt:           now,
+		ID:        uuid.New(),
+		UserID:    userID,
+		Languages: []string{},
+		Work:      []model.WorkExperience{},
+		Education: []model.EducationEntry{},
+		Visibility: &model.ProfileVisibility{
+			Bio:              "public",
+			Work:             "public",
+			Education:        "public",
+			ContactInfo:      "friends",
+			RelationshipInfo: "friends",
+			Hometown:         "public",
+			Birthday:         "friends",
+		},
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 
 	if err := s.profileRepo.CreateProfile(ctx, profile); err != nil {
@@ -65,25 +69,31 @@ func (s *ProfileService) createDefaultProfile(ctx context.Context, userID uuid.U
 	return profile, nil
 }
 
-// UpdateProfileExtended updates extended profile information
-func (s *ProfileService) UpdateProfileExtended(ctx context.Context, userID uuid.UUID, req *model.UpdateProfileExtendedRequest) (*model.Profile, error) {
+// UpdateProfileInfo updates basic profile information
+func (s *ProfileService) UpdateProfileInfo(ctx context.Context, userID uuid.UUID, req *model.UpdateProfileInfoRequest) (*model.Profile, error) {
 	profile, err := s.GetOrCreateProfile(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
 	// Update fields
-	if req.Category != nil {
-		profile.Category = req.Category
+	if req.Hometown != nil {
+		profile.Hometown = req.Hometown
 	}
-	if req.CategoryType != nil {
-		profile.CategoryType = req.CategoryType
+	if req.CurrentCity != nil {
+		profile.CurrentCity = req.CurrentCity
 	}
-	if req.Gender != nil {
-		profile.Gender = req.Gender
+	if req.RelationshipStatus != nil {
+		profile.RelationshipStatus = req.RelationshipStatus
 	}
-	if req.Pronouns != nil {
-		profile.Pronouns = req.Pronouns
+	if req.About != nil {
+		profile.About = req.About
+	}
+	if req.FavoriteQuotes != nil {
+		profile.FavoriteQuotes = req.FavoriteQuotes
+	}
+	if req.Website != nil {
+		profile.Website = req.Website
 	}
 
 	if err := s.profileRepo.UpdateProfile(ctx, profile); err != nil {
@@ -93,26 +103,45 @@ func (s *ProfileService) UpdateProfileExtended(ctx context.Context, userID uuid.
 	return profile, nil
 }
 
-// AddLinkInBio adds a link to bio
-func (s *ProfileService) AddLinkInBio(ctx context.Context, userID uuid.UUID, req *model.AddLinkInBioRequest) (*model.Profile, error) {
+// AddWorkExperience adds work experience to profile
+func (s *ProfileService) AddWorkExperience(ctx context.Context, userID uuid.UUID, req *model.AddWorkExperienceRequest) (*model.Profile, error) {
 	profile, err := s.GetOrCreateProfile(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	// Create new link
-	link := model.LinkInBio{
-		ID:    uuid.New().String(),
-		Title: req.Title,
-		URL:   req.URL,
-		Order: len(profile.LinkInBio),
+	// Parse dates
+	startDate, err := time.Parse("2006-01-02", req.StartDate)
+	if err != nil {
+		return nil, fmt.Errorf("invalid start date format: %w", err)
+	}
+
+	var endDate *time.Time
+	if req.EndDate != nil && *req.EndDate != "" {
+		parsedDate, err := time.Parse("2006-01-02", *req.EndDate)
+		if err != nil {
+			return nil, fmt.Errorf("invalid end date format: %w", err)
+		}
+		endDate = &parsedDate
+	}
+
+	// Create new work entry
+	workEntry := model.WorkExperience{
+		ID:          uuid.New().String(),
+		Company:     req.Company,
+		Position:    req.Position,
+		City:        req.City,
+		Description: req.Description,
+		StartDate:   startDate,
+		EndDate:     endDate,
+		IsCurrent:   req.IsCurrent,
 	}
 
 	// Add to profile
-	if profile.LinkInBio == nil {
-		profile.LinkInBio = []model.LinkInBio{}
+	if profile.Work == nil {
+		profile.Work = []model.WorkExperience{}
 	}
-	profile.LinkInBio = append(profile.LinkInBio, link)
+	profile.Work = append(profile.Work, workEntry)
 
 	if err := s.profileRepo.UpdateProfile(ctx, profile); err != nil {
 		return nil, err
@@ -121,21 +150,21 @@ func (s *ProfileService) AddLinkInBio(ctx context.Context, userID uuid.UUID, req
 	return profile, nil
 }
 
-// RemoveLinkInBio removes a link from bio
-func (s *ProfileService) RemoveLinkInBio(ctx context.Context, userID uuid.UUID, linkID string) (*model.Profile, error) {
+// RemoveWorkExperience removes work experience from profile
+func (s *ProfileService) RemoveWorkExperience(ctx context.Context, userID uuid.UUID, workID string) (*model.Profile, error) {
 	profile, err := s.GetOrCreateProfile(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	// Filter out the link
-	newLinks := []model.LinkInBio{}
-	for _, link := range profile.LinkInBio {
-		if link.ID != linkID {
-			newLinks = append(newLinks, link)
+	// Filter out the work entry
+	newWork := []model.WorkExperience{}
+	for _, work := range profile.Work {
+		if work.ID != workID {
+			newWork = append(newWork, work)
 		}
 	}
-	profile.LinkInBio = newLinks
+	profile.Work = newWork
 
 	if err := s.profileRepo.UpdateProfile(ctx, profile); err != nil {
 		return nil, err
@@ -144,28 +173,30 @@ func (s *ProfileService) RemoveLinkInBio(ctx context.Context, userID uuid.UUID, 
 	return profile, nil
 }
 
-// AddHighlight adds a story highlight
-func (s *ProfileService) AddHighlight(ctx context.Context, userID uuid.UUID, req *model.AddHighlightRequest) (*model.Profile, error) {
+// AddEducation adds education to profile
+func (s *ProfileService) AddEducation(ctx context.Context, userID uuid.UUID, req *model.AddEducationRequest) (*model.Profile, error) {
 	profile, err := s.GetOrCreateProfile(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	// Create new highlight
-	highlight := model.StoryHighlight{
-		ID:        uuid.New().String(),
-		Title:     req.Title,
-		CoverURL:  req.CoverURL,
-		StoryIDs:  req.StoryIDs,
-		CreatedAt: time.Now(),
-		Order:     len(profile.Highlights),
+	// Create new education entry
+	educationEntry := model.EducationEntry{
+		ID:              uuid.New().String(),
+		School:          req.School,
+		Degree:          req.Degree,
+		FieldOfStudy:    req.FieldOfStudy,
+		StartYear:       req.StartYear,
+		EndYear:         req.EndYear,
+		Description:     req.Description,
+		IsCurrentlyHere: req.IsCurrentlyHere,
 	}
 
 	// Add to profile
-	if profile.Highlights == nil {
-		profile.Highlights = []model.StoryHighlight{}
+	if profile.Education == nil {
+		profile.Education = []model.EducationEntry{}
 	}
-	profile.Highlights = append(profile.Highlights, highlight)
+	profile.Education = append(profile.Education, educationEntry)
 
 	if err := s.profileRepo.UpdateProfile(ctx, profile); err != nil {
 		return nil, err
@@ -174,21 +205,21 @@ func (s *ProfileService) AddHighlight(ctx context.Context, userID uuid.UUID, req
 	return profile, nil
 }
 
-// RemoveHighlight removes a story highlight
-func (s *ProfileService) RemoveHighlight(ctx context.Context, userID uuid.UUID, highlightID string) (*model.Profile, error) {
+// RemoveEducation removes education from profile
+func (s *ProfileService) RemoveEducation(ctx context.Context, userID uuid.UUID, educationID string) (*model.Profile, error) {
 	profile, err := s.GetOrCreateProfile(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	// Filter out the highlight
-	newHighlights := []model.StoryHighlight{}
-	for _, highlight := range profile.Highlights {
-		if highlight.ID != highlightID {
-			newHighlights = append(newHighlights, highlight)
+	// Filter out the education entry
+	newEducation := []model.EducationEntry{}
+	for _, edu := range profile.Education {
+		if edu.ID != educationID {
+			newEducation = append(newEducation, edu)
 		}
 	}
-	profile.Highlights = newHighlights
+	profile.Education = newEducation
 
 	if err := s.profileRepo.UpdateProfile(ctx, profile); err != nil {
 		return nil, err
@@ -197,37 +228,39 @@ func (s *ProfileService) RemoveHighlight(ctx context.Context, userID uuid.UUID, 
 	return profile, nil
 }
 
-// UpdateContactOptions updates business contact options
-func (s *ProfileService) UpdateContactOptions(ctx context.Context, userID uuid.UUID, req *model.UpdateContactOptionsRequest) (*model.Profile, error) {
+// UpdateContactInfo updates contact information
+func (s *ProfileService) UpdateContactInfo(ctx context.Context, userID uuid.UUID, req *model.UpdateContactInfoRequest) (*model.Profile, error) {
 	profile, err := s.GetOrCreateProfile(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
 	// Initialize if nil
-	if profile.ContactOptions == nil {
-		profile.ContactOptions = &model.ContactOptions{}
+	if profile.ContactInfo == nil {
+		profile.ContactInfo = &model.ContactInfo{}
 	}
 
 	// Update fields
 	if req.Email != nil {
-		profile.ContactOptions.Email = req.Email
+		profile.ContactInfo.Email = req.Email
 	}
 	if req.PhoneNumber != nil {
-		profile.ContactOptions.PhoneNumber = req.PhoneNumber
+		profile.ContactInfo.PhoneNumber = req.PhoneNumber
 	}
 	if req.Address != nil {
-		// Split address into street/city/zip if needed
-		profile.ContactOptions.AddressStreet = req.Address
+		profile.ContactInfo.Address = req.Address
 	}
-	if req.ShowEmail != nil {
-		profile.ContactOptions.ShowEmail = *req.ShowEmail
+	if req.City != nil {
+		profile.ContactInfo.City = req.City
 	}
-	if req.ShowPhone != nil {
-		profile.ContactOptions.ShowPhone = *req.ShowPhone
+	if req.State != nil {
+		profile.ContactInfo.State = req.State
 	}
-	if req.ShowAddress != nil {
-		profile.ContactOptions.ShowAddress = *req.ShowAddress
+	if req.ZipCode != nil {
+		profile.ContactInfo.ZipCode = req.ZipCode
+	}
+	if req.Country != nil {
+		profile.ContactInfo.Country = req.Country
 	}
 
 	if err := s.profileRepo.UpdateProfile(ctx, profile); err != nil {
@@ -237,80 +270,86 @@ func (s *ProfileService) UpdateContactOptions(ctx context.Context, userID uuid.U
 	return profile, nil
 }
 
-// EnableCreatorAccount switches account to creator account
-func (s *ProfileService) EnableCreatorAccount(ctx context.Context, userID uuid.UUID, req *model.EnableCreatorAccountRequest) (*model.Profile, error) {
+// UpdateSocialLinks updates social media links
+func (s *ProfileService) UpdateSocialLinks(ctx context.Context, userID uuid.UUID, req *model.UpdateSocialLinksRequest) (*model.Profile, error) {
 	profile, err := s.GetOrCreateProfile(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	// Initialize creator insights
-	if profile.CreatorInsights == nil {
-		profile.CreatorInsights = &model.CreatorInsights{
-			IsCreatorAccount: true,
-			EnabledDate:      time.Now(),
-			TopAudiences:     []string{},
+	// Initialize if nil
+	if profile.SocialLinks == nil {
+		profile.SocialLinks = &model.SocialLinks{}
+	}
+
+	// Update fields
+	if req.Instagram != nil {
+		profile.SocialLinks.Instagram = req.Instagram
+	}
+	if req.Twitter != nil {
+		profile.SocialLinks.Twitter = req.Twitter
+	}
+	if req.LinkedIn != nil {
+		profile.SocialLinks.LinkedIn = req.LinkedIn
+	}
+	if req.YouTube != nil {
+		profile.SocialLinks.YouTube = req.YouTube
+	}
+	if req.GitHub != nil {
+		profile.SocialLinks.GitHub = req.GitHub
+	}
+	if req.Website != nil {
+		profile.SocialLinks.Website = req.Website
+	}
+
+	if err := s.profileRepo.UpdateProfile(ctx, profile); err != nil {
+		return nil, err
+	}
+
+	return profile, nil
+}
+
+// UpdateVisibility updates profile visibility settings
+func (s *ProfileService) UpdateVisibility(ctx context.Context, userID uuid.UUID, req *model.UpdateVisibilityRequest) (*model.Profile, error) {
+	profile, err := s.GetOrCreateProfile(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Initialize if nil
+	if profile.Visibility == nil {
+		profile.Visibility = &model.ProfileVisibility{
+			Bio:              "public",
+			Work:             "public",
+			Education:        "public",
+			ContactInfo:      "friends",
+			RelationshipInfo: "friends",
+			Hometown:         "public",
+			Birthday:         "friends",
 		}
-	} else {
-		profile.CreatorInsights.IsCreatorAccount = true
-		profile.CreatorInsights.EnabledDate = time.Now()
 	}
 
-	// Update category
-	creator := "creator"
-	profile.Category = &creator
-	profile.CategoryType = &req.Category
-
-	if err := s.profileRepo.UpdateProfile(ctx, profile); err != nil {
-		return nil, err
+	// Update fields
+	if req.Bio != nil {
+		profile.Visibility.Bio = *req.Bio
 	}
-
-	return profile, nil
-}
-
-// EnableBusinessAccount switches account to business account
-func (s *ProfileService) EnableBusinessAccount(ctx context.Context, userID uuid.UUID, req *model.EnableBusinessAccountRequest) (*model.Profile, error) {
-	profile, err := s.GetOrCreateProfile(ctx, userID)
-	if err != nil {
-		return nil, err
+	if req.Work != nil {
+		profile.Visibility.Work = *req.Work
 	}
-
-	// Initialize business info
-	profile.BusinessInfo = &model.BusinessInfo{
-		IsBusinessAccount: true,
-		BusinessCategory:  req.BusinessCategory,
-		BusinessEmail:     req.BusinessEmail,
-		BusinessPhone:     req.BusinessPhone,
-		BusinessAddress:   req.BusinessAddress,
-		PriceRange:        req.PriceRange,
+	if req.Education != nil {
+		profile.Visibility.Education = *req.Education
 	}
-
-	// Update category
-	business := "business"
-	profile.Category = &business
-
-	if err := s.profileRepo.UpdateProfile(ctx, profile); err != nil {
-		return nil, err
+	if req.ContactInfo != nil {
+		profile.Visibility.ContactInfo = *req.ContactInfo
 	}
-
-	return profile, nil
-}
-
-// UpdateAvailability updates availability status
-func (s *ProfileService) UpdateAvailability(ctx context.Context, userID uuid.UUID, req *model.UpdateAvailabilityRequest) (*model.Profile, error) {
-	profile, err := s.GetOrCreateProfile(ctx, userID)
-	if err != nil {
-		return nil, err
+	if req.RelationshipInfo != nil {
+		profile.Visibility.RelationshipInfo = *req.RelationshipInfo
 	}
-
-	message := ""
-	if req.Message != nil {
-		message = *req.Message
+	if req.Hometown != nil {
+		profile.Visibility.Hometown = *req.Hometown
 	}
-
-	profile.Availability = &model.Availability{
-		Status:  req.Status,
-		Message: message,
+	if req.Birthday != nil {
+		profile.Visibility.Birthday = *req.Birthday
 	}
 
 	if err := s.profileRepo.UpdateProfile(ctx, profile); err != nil {
@@ -318,11 +357,6 @@ func (s *ProfileService) UpdateAvailability(ctx context.Context, userID uuid.UUI
 	}
 
 	return profile, nil
-}
-
-// IncrementProfileViews increments profile view count
-func (s *ProfileService) IncrementProfileViews(ctx context.Context, userID uuid.UUID) error {
-	return s.profileRepo.IncrementProfileViews(ctx, userID)
 }
 
 // GetProfileWithUser gets profile along with user information

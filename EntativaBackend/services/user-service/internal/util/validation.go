@@ -4,127 +4,162 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-	"time"
+	"unicode"
 )
 
 var (
-	emailRegex    = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-	usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9._]{3,30}$`)
+	// Email regex pattern
+	emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
+	
+	// Username regex (Instagram-style for Vignette)
+	usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9._]+$`)
 )
 
-// IsValidEmail checks if an email is valid
+// IsValidEmail validates an email address
 func IsValidEmail(email string) bool {
+	if email == "" || len(email) > 255 {
+		return false
+	}
 	return emailRegex.MatchString(email)
 }
 
-// IsValidUsername checks if a username is valid
-func IsValidUsername(username string) bool {
-	return usernameRegex.MatchString(username)
-}
-
-// GenerateUsername generates a clean username from first and last name
-// Format: firstname.lastname (for URLs like Socialink.com/john.doe)
-func GenerateUsername(firstName, lastName string) string {
-	// Create base username: firstname.lastname
-	first := strings.ToLower(firstName)
-	last := strings.ToLower(lastName)
+// ValidateEmail validates email and returns error if invalid
+func ValidateEmail(email string) error {
+	email = strings.TrimSpace(email)
 	
-	// Remove any special characters and spaces
-	first = regexp.MustCompile(`[^a-z0-9]`).ReplaceAllString(first, "")
-	last = regexp.MustCompile(`[^a-z0-9]`).ReplaceAllString(last, "")
-	
-	// Base format: firstname.lastname
-	base := first + "." + last
-	
-	return base
-}
-
-// GenerateUniqueUsername generates a unique username with suffix if needed
-func GenerateUniqueUsername(firstName, lastName string) string {
-	base := GenerateUsername(firstName, lastName)
-	
-	// Add random suffix to ensure uniqueness
-	// This will be checked against database and regenerated if exists
-	suffix := time.Now().UnixNano() % 9999
-	if suffix == 0 {
-		return base
+	if email == "" {
+		return fmt.Errorf("email is required")
 	}
-	return fmt.Sprintf("%s%d", base, suffix)
+	
+	if len(email) > 255 {
+		return fmt.Errorf("email is too long")
+	}
+	
+	if !IsValidEmail(email) {
+		return fmt.Errorf("invalid email format")
+	}
+	
+	return nil
 }
 
-// ValidateDisplayName validates first/last names (relaxed policy)
-// Unlike Facebook, we don't require legal names but recommend them
-func ValidateDisplayName(name string) (bool, string) {
-	// Remove leading/trailing whitespace
+// IsValidUsername validates a username (Instagram-style rules)
+func IsValidUsername(username string) bool {
+	if len(username) < 3 || len(username) > 30 {
+		return false
+	}
+	
+	// Check if matches pattern
+	if !usernameRegex.MatchString(username) {
+		return false
+	}
+	
+	// Cannot start or end with period
+	if strings.HasPrefix(username, ".") || strings.HasSuffix(username, ".") {
+		return false
+	}
+	
+	// Cannot have consecutive periods
+	if strings.Contains(username, "..") {
+		return false
+	}
+	
+	return true
+}
+
+// ValidateUsername validates username and returns error if invalid
+func ValidateUsername(username string) error {
+	username = strings.TrimSpace(username)
+	
+	if username == "" {
+		return fmt.Errorf("username is required")
+	}
+	
+	if len(username) < 3 {
+		return fmt.Errorf("username must be at least 3 characters")
+	}
+	
+	if len(username) > 30 {
+		return fmt.Errorf("username must be 30 characters or less")
+	}
+	
+	if !usernameRegex.MatchString(username) {
+		return fmt.Errorf("username can only contain letters, numbers, periods, and underscores")
+	}
+	
+	if strings.HasPrefix(username, ".") || strings.HasSuffix(username, ".") {
+		return fmt.Errorf("username cannot start or end with a period")
+	}
+	
+	if strings.Contains(username, "..") {
+		return fmt.Errorf("username cannot have consecutive periods")
+	}
+	
+	return nil
+}
+
+// ValidateName validates first/last name
+func ValidateName(name, fieldName string) error {
 	name = strings.TrimSpace(name)
 	
-	// Minimum length check
-	if len(name) < 1 {
-		return false, "Name must be at least 1 character"
+	if name == "" {
+		return fmt.Errorf("%s is required", fieldName)
 	}
 	
-	// Maximum length check
+	if len(name) < 2 {
+		return fmt.Errorf("%s must be at least 2 characters", fieldName)
+	}
+	
 	if len(name) > 50 {
-		return false, "Name must be less than 50 characters"
+		return fmt.Errorf("%s must be 50 characters or less", fieldName)
 	}
 	
-	// Allow letters, spaces, hyphens, apostrophes, and common international characters
-	// This is more relaxed than Facebook's policy
-	validPattern := regexp.MustCompile(`^[\p{L}\p{M}\s\-'\.]+$`)
-	if !validPattern.MatchString(name) {
-		return false, "Name contains invalid characters. Use letters, spaces, hyphens, or apostrophes"
-	}
-	
-	// Check for excessive special characters (anti-spam)
-	specialChars := regexp.MustCompile(`[\-'\.]`)
-	if len(specialChars.FindAllString(name, -1)) > len(name)/2 {
-		return false, "Name contains too many special characters"
-	}
-	
-	return true, ""
-}
-
-// IsLikelyRealName provides a hint if the name looks like a real name
-// This is informational only, not enforced
-func IsLikelyRealName(firstName, lastName string) (bool, string) {
-	// Check for common patterns that suggest fake names
-	full := strings.ToLower(firstName + " " + lastName)
-	
-	// Check for numbers
-	if regexp.MustCompile(`\d`).MatchString(full) {
-		return false, "Consider using your real name for better connections"
-	}
-	
-	// Check for excessive repetition
-	if regexp.MustCompile(`(.)\1{3,}`).MatchString(full) {
-		return false, "Consider using your real name for authenticity"
-	}
-	
-	// Check for common fake patterns
-	fakePatterns := []string{"test", "fake", "admin", "user", "account", "temp"}
-	for _, pattern := range fakePatterns {
-		if strings.Contains(full, pattern) {
-			return false, "We recommend using your real name to connect with friends and family"
+	// Check if contains only letters, spaces, hyphens, apostrophes
+	for _, char := range name {
+		if !unicode.IsLetter(char) && char != ' ' && char != '-' && char != '\'' {
+			return fmt.Errorf("%s can only contain letters, spaces, hyphens, and apostrophes", fieldName)
 		}
 	}
 	
-	return true, ""
+	return nil
 }
 
-// IsValidBirthday checks if a birthday is valid (user must be at least 13 years old)
-func IsValidBirthday(birthday time.Time) bool {
-	age := time.Now().Year() - birthday.Year()
-	if time.Now().YearDay() < birthday.YearDay() {
-		age--
-	}
-	return age >= 13 && age <= 120
+// SanitizeInput removes potentially dangerous characters
+func SanitizeInput(input string) string {
+	// Trim whitespace
+	input = strings.TrimSpace(input)
+	
+	// Remove null bytes
+	input = strings.ReplaceAll(input, "\x00", "")
+	
+	return input
 }
 
-// ValidatePassword checks password strength
-func ValidatePassword(password string) bool {
-	if len(password) < 8 {
-		return false
+// ValidateGender validates gender field
+func ValidateGender(gender string) error {
+	validGenders := map[string]bool{
+		"male":                true,
+		"female":              true,
+		"non_binary":          true,
+		"prefer_not_to_say":   true,
+		"custom":              true,
 	}
-	// Could add more complex validation here
-	return true
+	
+	if !validGenders[gender] {
+		return fmt.Errorf("invalid gender value")
+	}
+	
+	return nil
+}
+
+// SplitFullName splits a full name into first and last name
+func SplitFullName(fullName string) (firstName, lastName string) {
+	fullName = strings.TrimSpace(fullName)
+	
+	parts := strings.SplitN(fullName, " ", 2)
+	
+	if len(parts) == 1 {
+		return parts[0], ""
+	}
+	
+	return parts[0], parts[1]
 }

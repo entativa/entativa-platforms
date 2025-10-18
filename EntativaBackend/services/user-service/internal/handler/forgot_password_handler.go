@@ -4,10 +4,13 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
+	"user-service/internal/util"
 )
 
 // ForgotPasswordRequest represents the forgot password request payload

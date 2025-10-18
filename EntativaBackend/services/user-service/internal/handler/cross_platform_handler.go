@@ -2,10 +2,17 @@ package handler
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"strings"
 	"time"
+
+	"user-service/internal/repository"
+	"user-service/internal/util"
 )
 
 // CrossPlatformSignInRequest represents cross-platform sign-in request

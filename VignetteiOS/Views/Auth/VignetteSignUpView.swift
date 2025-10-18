@@ -49,9 +49,9 @@ struct VignetteSignUpView: View {
                         .padding(.horizontal, 32)
                         .padding(.vertical, 24)
                         
-                        // Facebook sign up (placeholder)
-                        facebookSignUpButton
-                            .padding(.horizontal, 32)
+                // Sign in with Entativa
+                signInWithEntativaButton
+                    .padding(.horizontal, 32)
                         
                         // Terms
                         termsSection
@@ -224,20 +224,25 @@ struct VignetteSignUpView: View {
         }
     }
     
-    // MARK: - Facebook Sign Up Button
+    // MARK: - Sign in with Entativa Button
     
-    private var facebookSignUpButton: some View {
+    private var signInWithEntativaButton: some View {
         Button {
-            // TODO: Implement Facebook OAuth
+            // Navigate to Entativa sign-in flow
         } label: {
             HStack(spacing: 8) {
-                Image(systemName: "f.square.fill")
-                    .font(.system(size: 20))
+                Text("e")
+                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .italic()
                 
-                Text("Log in with Facebook")
+                Text("Sign in with Entativa")
                     .vignetteButtonMedium()
             }
-            .foregroundColor(VignetteColors.moonstone)
+            .foregroundColor(EntativaColors.primaryBlue)
+            .frame(maxWidth: .infinity)
+            .frame(height: 44)
+            .background(EntativaColors.buttonPrimaryDeemph)
+            .cornerRadius(8)
         }
     }
     
