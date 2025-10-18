@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"vignette/user-service/internal/model"
-	"vignette/user-service/internal/repository"
-	"vignette/user-service/internal/util"
+	"socialink/user-service/internal/model"
+	"socialink/user-service/internal/repository"
+	"socialink/user-service/internal/util"
 
 	"github.com/google/uuid"
 )

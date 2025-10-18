@@ -1,113 +1,114 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
-	"strings"
 
-	"socialink/user-service/internal/service"
-
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"user-service/internal/logger"
+	"user-service/internal/repository"
+	"user-service/internal/util"
 )
 
-// AuthMiddleware creates a middleware that validates JWT tokens
-func AuthMiddleware(authService *service.AuthService) gin.HandlerFunc {
-	return func(c *gin.Context) {
+// AuthMiddleware handles JWT authentication
+type AuthMiddleware struct {
+	userRepo *repository.UserRepository
+	logger   *logger.Logger
+}
+
+// NewAuthMiddleware creates a new auth middleware
+func NewAuthMiddleware(userRepo *repository.UserRepository, logger *logger.Logger) *AuthMiddleware {
+	return &AuthMiddleware{
+		userRepo: userRepo,
+		logger:   logger,
+	}
+}
+
+// RequireAuth middleware ensures the request has a valid JWT token
+func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Get Authorization header
-		authHeader := c.GetHeader("Authorization")
+		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error":   "Unauthorized",
-				"message": "Missing authorization header",
-			})
-			c.Abort()
+			util.RespondWithUnauthorized(w, "Authorization header required")
 			return
 		}
-
-		// Check if it's a Bearer token
-		parts := strings.SplitN(authHeader, " ", 2)
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error":   "Unauthorized",
-				"message": "Invalid authorization header format. Use: Bearer <token>",
-			})
-			c.Abort()
-			return
-		}
-
-		token := parts[1]
-
-		// Validate token
-		claims, err := authService.ValidateToken(token)
+		
+		// Extract token
+		token, err := util.ExtractTokenFromHeader(authHeader)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error":   "Unauthorized",
-				"message": "Invalid or expired token",
-			})
-			c.Abort()
+			util.RespondWithUnauthorized(w, err.Error())
 			return
 		}
-
-		// Set user data in context
-		c.Set("user_id", claims.UserID.String())
-		c.Set("email", claims.Email)
-		c.Set("username", claims.Username)
-		c.Set("first_name", claims.FirstName)
-		c.Set("last_name", claims.LastName)
-		c.Set("user", map[string]interface{}{
-			"id":         claims.UserID,
-			"email":      claims.Email,
-			"username":   claims.Username,
-			"first_name": claims.FirstName,
-			"last_name":  claims.LastName,
-		})
-
-		c.Next()
-	}
+		
+		// Parse and validate token
+		claims, err := util.ParseAccessToken(token)
+		if err != nil {
+			util.RespondWithUnauthorized(w, "Invalid or expired token")
+			return
+		}
+		
+		// Get user from database
+		user, err := m.userRepo.FindByID(r.Context(), claims.UserID)
+		if err != nil {
+			util.RespondWithUnauthorized(w, "User not found")
+			return
+		}
+		
+		// Check if user is active
+		if !user.IsActive {
+			util.RespondWithForbidden(w, "Account is deactivated")
+			return
+		}
+		
+		// Add user to request context
+		ctx := context.WithValue(r.Context(), "user", user)
+		ctx = context.WithValue(ctx, "user_id", user.ID)
+		
+		// Continue to next handler
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
-// OptionalAuthMiddleware is a middleware that sets user context if token is present
-func OptionalAuthMiddleware(authService *service.AuthService) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.Next()
-			return
+// OptionalAuth middleware attempts to authenticate but doesn't require it
+func (m *AuthMiddleware) OptionalAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		
+		if authHeader != "" {
+			token, err := util.ExtractTokenFromHeader(authHeader)
+			if err == nil {
+				claims, err := util.ParseAccessToken(token)
+				if err == nil {
+					user, err := m.userRepo.FindByID(r.Context(), claims.UserID)
+					if err == nil && user.IsActive {
+						ctx := context.WithValue(r.Context(), "user", user)
+						ctx = context.WithValue(ctx, "user_id", user.ID)
+						r = r.WithContext(ctx)
+					}
+				}
+			}
 		}
-
-		parts := strings.SplitN(authHeader, " ", 2)
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.Next()
-			return
-		}
-
-		token := parts[1]
-		claims, err := authService.ValidateToken(token)
-		if err != nil {
-			c.Next()
-			return
-		}
-
-		// Set user data in context
-		c.Set("user_id", claims.UserID.String())
-		c.Set("email", claims.Email)
-		c.Set("username", claims.Username)
-
-		c.Next()
-	}
+		
+		next.ServeHTTP(w, r)
+	})
 }
 
-// GetUserID extracts user ID from context
-func GetUserID(c *gin.Context) (uuid.UUID, bool) {
-	userIDStr, exists := c.Get("user_id")
-	if !exists {
-		return uuid.Nil, false
-	}
-
-	userID, err := uuid.Parse(userIDStr.(string))
-	if err != nil {
-		return uuid.Nil, false
-	}
-
-	return userID, true
+// RequireFounder middleware ensures the user is the founder (@neoqiss)
+func (m *AuthMiddleware) RequireFounder(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, ok := r.Context().Value("user").(*repository.User)
+		if !ok {
+			util.RespondWithUnauthorized(w, "")
+			return
+		}
+		
+		// Check if user is the founder
+		if user.Username != "neoqiss" {
+			util.RespondWithForbidden(w, "Founder access required")
+			m.logger.Warn("Unauthorized admin access attempt", nil)
+			return
+		}
+		
+		next.ServeHTTP(w, r)
+	})
 }

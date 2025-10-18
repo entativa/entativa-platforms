@@ -1,39 +1,64 @@
 package util
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
+	"unicode"
 )
 
 var (
-	emailRegex    = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-	usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9._]{3,30}$`)
+	// Email regex pattern
+	emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
+	
+	// Username regex (Instagram-style for Vignette)
+	usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9._]+$`)
 )
 
-// IsValidEmail checks if an email is valid
+// IsValidEmail validates an email address
 func IsValidEmail(email string) bool {
+	if email == "" || len(email) > 255 {
+		return false
+	}
 	return emailRegex.MatchString(email)
 }
 
-// IsValidUsername checks if a username is valid (Instagram-style)
-// Username must be 3-30 characters, can contain letters, numbers, periods, and underscores
+// ValidateEmail validates email and returns error if invalid
+func ValidateEmail(email string) error {
+	email = strings.TrimSpace(email)
+	
+	if email == "" {
+		return fmt.Errorf("email is required")
+	}
+	
+	if len(email) > 255 {
+		return fmt.Errorf("email is too long")
+	}
+	
+	if !IsValidEmail(email) {
+		return fmt.Errorf("invalid email format")
+	}
+	
+	return nil
+}
+
+// IsValidUsername validates a username (Instagram-style rules)
 func IsValidUsername(username string) bool {
-	// Check length
 	if len(username) < 3 || len(username) > 30 {
 		return false
 	}
 	
-	// Check format
+	// Check if matches pattern
 	if !usernameRegex.MatchString(username) {
 		return false
 	}
 	
-	// Username cannot start or end with a period
+	// Cannot start or end with period
 	if strings.HasPrefix(username, ".") || strings.HasSuffix(username, ".") {
 		return false
 	}
 	
-	// Username cannot have consecutive periods
+	// Cannot have consecutive periods
 	if strings.Contains(username, "..") {
 		return false
 	}
@@ -41,42 +66,100 @@ func IsValidUsername(username string) bool {
 	return true
 }
 
-// SanitizeUsername sanitizes a username by removing invalid characters
-func SanitizeUsername(username string) string {
-	// Convert to lowercase
-	username = strings.ToLower(username)
+// ValidateUsername validates username and returns error if invalid
+func ValidateUsername(username string) error {
+	username = strings.TrimSpace(username)
 	
-	// Remove spaces and special characters except . and _
-	re := regexp.MustCompile(`[^a-z0-9._]`)
-	username = re.ReplaceAllString(username, "")
-	
-	// Remove leading/trailing periods
-	username = strings.Trim(username, ".")
-	
-	// Replace consecutive periods
-	for strings.Contains(username, "..") {
-		username = strings.ReplaceAll(username, "..", ".")
+	if username == "" {
+		return fmt.Errorf("username is required")
 	}
 	
-	return username
+	if len(username) < 3 {
+		return fmt.Errorf("username must be at least 3 characters")
+	}
+	
+	if len(username) > 30 {
+		return fmt.Errorf("username must be 30 characters or less")
+	}
+	
+	if !usernameRegex.MatchString(username) {
+		return fmt.Errorf("username can only contain letters, numbers, periods, and underscores")
+	}
+	
+	if strings.HasPrefix(username, ".") || strings.HasSuffix(username, ".") {
+		return fmt.Errorf("username cannot start or end with a period")
+	}
+	
+	if strings.Contains(username, "..") {
+		return fmt.Errorf("username cannot have consecutive periods")
+	}
+	
+	return nil
 }
 
-// ValidatePassword checks password strength
-func ValidatePassword(password string) bool {
-	// Minimum 8 characters
-	if len(password) < 8 {
-		return false
+// ValidateName validates first/last name
+func ValidateName(name, fieldName string) error {
+	name = strings.TrimSpace(name)
+	
+	if name == "" {
+		return fmt.Errorf("%s is required", fieldName)
 	}
 	
-	// Maximum 128 characters
-	if len(password) > 128 {
-		return false
+	if len(name) < 2 {
+		return fmt.Errorf("%s must be at least 2 characters", fieldName)
 	}
 	
-	return true
+	if len(name) > 50 {
+		return fmt.Errorf("%s must be 50 characters or less", fieldName)
+	}
+	
+	// Check if contains only letters, spaces, hyphens, apostrophes
+	for _, char := range name {
+		if !unicode.IsLetter(char) && char != ' ' && char != '-' && char != '\'' {
+			return fmt.Errorf("%s can only contain letters, spaces, hyphens, and apostrophes", fieldName)
+		}
+	}
+	
+	return nil
 }
 
-// ValidateBio checks if bio is valid (max 150 characters for Instagram-like)
-func ValidateBio(bio string) bool {
-	return len(bio) <= 150
+// SanitizeInput removes potentially dangerous characters
+func SanitizeInput(input string) string {
+	// Trim whitespace
+	input = strings.TrimSpace(input)
+	
+	// Remove null bytes
+	input = strings.ReplaceAll(input, "\x00", "")
+	
+	return input
+}
+
+// ValidateGender validates gender field
+func ValidateGender(gender string) error {
+	validGenders := map[string]bool{
+		"male":                true,
+		"female":              true,
+		"non_binary":          true,
+		"prefer_not_to_say":   true,
+		"custom":              true,
+	}
+	
+	if !validGenders[gender] {
+		return fmt.Errorf("invalid gender value")
+	}
+	
+	return nil
+}
+
+// SplitFullName splits a full name into first and last name
+func SplitFullName(fullName string) (firstName, lastName string) {
+	fullName = strings.TrimSpace(fullName)
+	
+	parts := strings.SplitN(fullName, " ", 2)
+	
+	if len(parts) == 1 {
+		return parts[0], ""
+	}
+	
+	return parts[0], parts[1]
 }

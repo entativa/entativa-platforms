@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Entativa Brand Colors -->
+    <color name="entativa_primary_blue">#007CFC</color>
+    <color name="entativa_primary_purple">#6F3EFB</color>
+    <color name="entativa_primary_pink">#FC30E1</color>
+    
+    <!-- Button Colors -->
+    <color name="entativa_button_primary">#007CFC</color>
+    <color name="entativa_button_primary_pressed">#0066D4</color>
+    <color name="entativa_button_primary_disabled">#66007CFC</color>
+    
+    <color name="entativa_button_primary_deemph">#C3E7F1</color>
+    <color name="entativa_button_primary_deemph_text">#007CFC</color>
+    <color name="entativa_button_primary_deemph_pressed">#A8D5E3</color>
+    
+    <color name="entativa_button_secondary">#F0F2F5</color>
+    <color name="entativa_button_secondary_text">#050505</color>
+    <color name="entativa_button_secondary_pressed">#E4E6E9</color>
+    
+    <!-- Background Colors -->
+    <color name="entativa_background_primary">#FFFFFF</color>
+    <color name="entativa_background_secondary">#F0F2F5</color>
+    <color name="entativa_background_tertiary">#E4E6EB</color>
+    
+    <!-- Text Colors -->
+    <color name="entativa_text_primary">#050505</color>
+    <color name="entativa_text_secondary">#65676B</color>
+    <color name="entativa_text_tertiary">#8A8D91</color>
+    <color name="entativa_text_placeholder">#BCC0C4</color>
+    <color name="entativa_text_on_primary">#FFFFFF</color>
+    <color name="entativa_text_link">#007CFC</color>
+    
+    <!-- Border Colors -->
+    <color name="entativa_border_default">#CED0D4</color>
+    <color name="entativa_border_focus">#007CFC</color>
+    <color name="entativa_border_error">#F02849</color>
+    
+    <!-- Status Colors -->
+    <color name="entativa_error">#F02849</color>
+    <color name="entativa_success">#42B72A</color>
+    <color name="entativa_warning">#F7B928</color>
+    <color name="entativa_info">#007CFC</color>
+    
+    <!-- Vignette Accent Colors (for cross-brand consistency) -->
+    <color name="vignette_light_blue">#C3E7F1</color>
+    <color name="vignette_moonstone">#519CAB</color>
+    <color name="vignette_saffron">#FFC64F</color>
+    <color name="vignette_gunmetal">#20373B</color>
+</resources>

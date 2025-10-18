@@ -1,7 +1,7 @@
 package service
 
 import (
-	"vignette/user-service/pkg/kafka"
+	"socialink/user-service/pkg/kafka"
 )
 
 // KafkaProducer wraps the Kafka producer for the service layer

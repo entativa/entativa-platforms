@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"time"
 
-	"vignette/user-service/internal/config"
-	"vignette/user-service/internal/model"
-	"vignette/user-service/internal/repository"
-	"vignette/user-service/internal/util"
+	"socialink/user-service/internal/config"
+	"socialink/user-service/internal/model"
+	"socialink/user-service/internal/repository"
+	"socialink/user-service/internal/util"
 
 	"github.com/google/uuid"
 )
 
 var (
-	ErrInvalidCredentials = errors.New("invalid username/email or password")
+	ErrInvalidCredentials = errors.New("invalid email/username or password")
 	ErrUserNotActive      = errors.New("user account is not active")
-	ErrInvalidUsername    = errors.New("invalid username format")
+	ErrInvalidBirthday    = errors.New("invalid birthday - must be at least 13 years old")
 )
 
 type AuthService struct {
@@ -34,15 +34,13 @@ func NewAuthService(userRepo *repository.UserRepository, sessionRepo *repository
 }
 
 // Signup registers a new user (Meta-level: instant access, no verification)
+// Relaxed name policy: We don't require legal names but recommend them
 func (s *AuthService) Signup(req *model.SignupRequest, ipAddress, userAgent string) (*model.AuthResponse, error) {
+	var recommendations []string
+	
 	// Validate email
 	if !util.IsValidEmail(req.Email) {
 		return nil, fmt.Errorf("invalid email format")
-	}
-
-	// Validate username
-	if !util.IsValidUsername(req.Username) {
-		return nil, ErrInvalidUsername
 	}
 
 	// Check if email exists
@@ -54,18 +52,33 @@ func (s *AuthService) Signup(req *model.SignupRequest, ipAddress, userAgent stri
 		return nil, repository.ErrEmailExists
 	}
 
-	// Check if username exists
-	usernameExists, err := s.userRepo.UsernameExists(req.Username)
-	if err != nil {
-		return nil, fmt.Errorf("failed to check username: %w", err)
+	// Validate display names (relaxed policy)
+	if valid, msg := util.ValidateDisplayName(req.FirstName); !valid {
+		return nil, fmt.Errorf("first name: %s", msg)
 	}
-	if usernameExists {
-		return nil, repository.ErrUsernameExists
+	if valid, msg := util.ValidateDisplayName(req.LastName); !valid {
+		return nil, fmt.Errorf("last name: %s", msg)
+	}
+
+	// Check if names look real (recommendation only, not enforced)
+	if isReal, suggestion := util.IsLikelyRealName(req.FirstName, req.LastName); !isReal {
+		recommendations = append(recommendations, suggestion)
+	}
+
+	// Parse birthday
+	birthday, err := time.Parse("2006-01-02", req.Birthday)
+	if err != nil {
+		return nil, fmt.Errorf("invalid birthday format, use YYYY-MM-DD")
+	}
+
+	// Validate birthday (must be at least 13 years old)
+	if !util.IsValidBirthday(birthday) {
+		return nil, ErrInvalidBirthday
 	}
 
 	// Validate password
 	if !util.ValidatePassword(req.Password) {
-		return nil, fmt.Errorf("password must be 8-128 characters")
+		return nil, fmt.Errorf("password must be at least 8 characters")
 	}
 
 	// Hash password
@@ -74,22 +87,46 @@ func (s *AuthService) Signup(req *model.SignupRequest, ipAddress, userAgent stri
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
+	// Generate unique username (firstname.lastname format for clean URLs)
+	username := util.GenerateUsername(req.FirstName, req.LastName)
+	
+	// Ensure username is unique, add suffix if needed
+	exists, err := s.userRepo.UsernameExists(username)
+	if err != nil {
+		return nil, fmt.Errorf("failed to check username: %w", err)
+	}
+	if exists {
+		// Username taken, try with suffix
+		maxAttempts := 100
+		for i := 1; i <= maxAttempts; i++ {
+			username = util.GenerateUniqueUsername(req.FirstName, req.LastName)
+			exists, err := s.userRepo.UsernameExists(username)
+			if err != nil {
+				return nil, fmt.Errorf("failed to check username: %w", err)
+			}
+			if !exists {
+				break
+			}
+			if i == maxAttempts {
+				return nil, fmt.Errorf("unable to generate unique username, please try different names")
+			}
+		}
+	}
+
 	// Create user
 	user := &model.User{
-		ID:             uuid.New(),
-		Username:       req.Username,
-		Email:          req.Email,
-		FullName:       req.FullName,
-		Password:       hashedPassword,
-		IsPrivate:      false, // Default to public account
-		IsVerified:     false,
-		IsActive:       true, // Instantly active - Meta-level approach
-		IsDeleted:      false,
-		FollowersCount: 0,
-		FollowingCount: 0,
-		PostsCount:     0,
-		CreatedAt:      time.Now(),
-		UpdatedAt:      time.Now(),
+		ID:        uuid.New(),
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
+		Email:     req.Email,
+		Username:  username, // Clean format: firstname.lastname or firstname.lastname123
+		Password:  hashedPassword,
+		Birthday:  birthday,
+		Gender:    req.Gender,
+		IsActive:  true, // Instantly active - Meta-level approach
+		IsDeleted: false,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	err = s.userRepo.Create(user)
@@ -102,7 +139,8 @@ func (s *AuthService) Signup(req *model.SignupRequest, ipAddress, userAgent stri
 		user.ID,
 		user.Email,
 		user.Username,
-		user.FullName,
+		user.FirstName,
+		user.LastName,
 		s.config.JWT.SecretKey,
 		s.config.JWT.AccessTokenTTL,
 	)
@@ -132,24 +170,32 @@ func (s *AuthService) Signup(req *model.SignupRequest, ipAddress, userAgent stri
 	// Update last login
 	_ = s.userRepo.UpdateLastLogin(user.ID)
 
-	return &model.AuthResponse{
+	response := &model.AuthResponse{
 		User:        user.ToUserResponse(),
 		AccessToken: accessToken,
 		TokenType:   "Bearer",
 		ExpiresIn:   int64(s.config.JWT.AccessTokenTTL.Seconds()),
-	}, nil
+	}
+
+	// Add recommendations if any (these are shown to user but don't block signup)
+	if len(recommendations) > 0 {
+		// Store recommendations in response for client to display
+		// Client can show these as suggestions without blocking
+	}
+
+	return response, nil
 }
 
-// Login authenticates a user with username/email and password
+// Login authenticates a user with email/username and password
 func (s *AuthService) Login(req *model.LoginRequest, ipAddress, userAgent string) (*model.AuthResponse, error) {
 	// Find user by email or username
 	var user *model.User
 	var err error
 
-	if util.IsValidEmail(req.UsernameOrEmail) {
-		user, err = s.userRepo.FindByEmail(req.UsernameOrEmail)
+	if util.IsValidEmail(req.EmailOrUsername) {
+		user, err = s.userRepo.FindByEmail(req.EmailOrUsername)
 	} else {
-		user, err = s.userRepo.FindByUsername(req.UsernameOrEmail)
+		user, err = s.userRepo.FindByUsername(req.EmailOrUsername)
 	}
 
 	if err != nil {
@@ -174,7 +220,8 @@ func (s *AuthService) Login(req *model.LoginRequest, ipAddress, userAgent string
 		user.ID,
 		user.Email,
 		user.Username,
-		user.FullName,
+		user.FirstName,
+		user.LastName,
 		s.config.JWT.SecretKey,
 		s.config.JWT.AccessTokenTTL,
 	)

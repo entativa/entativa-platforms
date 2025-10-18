@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"vignette/user-service/internal/model"
-	"vignette/user-service/internal/repository"
+	"socialink/user-service/internal/model"
+	"socialink/user-service/internal/repository"
 
 	"github.com/google/uuid"
 	"github.com/pquerna/otp"
@@ -36,7 +36,7 @@ func (s *TwoFactorService) SetupTwoFactor(userID uuid.UUID) (*model.TwoFactorSet
 
 	// Generate TOTP secret
 	key, err := totp.Generate(totp.GenerateOpts{
-		Issuer:      "Vignette",
+		Issuer:      "Socialink",
 		AccountName: user.Email,
 		SecretSize:  32,
 	})
