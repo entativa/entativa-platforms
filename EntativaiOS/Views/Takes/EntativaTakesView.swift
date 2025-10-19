@@ -18,9 +18,18 @@ struct EntativaTakesView: View {
                         TakeVideoPlayer(
                             take: take,
                             isCurrentlyPlaying: index == currentIndex,
-                            geometry: geometry
+                            geometry: geometry,
+                            viewModel: viewModel
                         )
                         .tag(index)
+                        .onAppear {
+                            // Load more when near end
+                            if index == viewModel.takes.count - 2 {
+                                Task {
+                                    await viewModel.loadMore()
+                                }
+                            }
+                        }
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
@@ -54,41 +63,49 @@ struct EntativaTakesView: View {
 
 // MARK: - Video Player Card
 struct TakeVideoPlayer: View {
-    let take: Take
+    let take: TakeModel
     let isCurrentlyPlaying: Bool
     let geometry: GeometryProxy
+    let viewModel: TakesViewModel
     
-    @State private var isLiked = false
     @State private var showComments = false
     @State private var showShare = false
     @State private var isFollowing = false
     
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            // Video Player (placeholder)
-            Rectangle()
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color.blue.opacity(0.4),
-                            Color.purple.opacity(0.6),
-                            Color.pink.opacity(0.4)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+            // Video Player (Real AVPlayer)
+            if let videoURL = URL(string: take.videoUrl) {
+                VideoPlayerView(
+                    videoURL: videoURL,
+                    isPlaying: isCurrentlyPlaying
+                )
+            } else {
+                // Fallback placeholder
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color.blue.opacity(0.4),
+                                Color.purple.opacity(0.6),
+                                Color.pink.opacity(0.4)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
                     )
-                )
-                .overlay(
-                    VStack {
-                        Image(systemName: "play.circle.fill")
-                            .font(.system(size: 80))
-                            .foregroundColor(.white.opacity(0.8))
-                        
-                        Text("Video Player")
-                            .font(.system(size: 16))
-                            .foregroundColor(.white.opacity(0.6))
-                    }
-                )
+                    .overlay(
+                        VStack {
+                            Image(systemName: "play.circle.fill")
+                                .font(.system(size: 80))
+                                .foregroundColor(.white.opacity(0.8))
+                            
+                            Text("Video Unavailable")
+                                .font(.system(size: 16))
+                                .foregroundColor(.white.opacity(0.6))
+                        }
+                    )
+            }
             
             // Right Side Actions
             VStack(spacing: 24) {
@@ -125,17 +142,21 @@ struct TakeVideoPlayer: View {
                 // Like
                 VStack(spacing: 4) {
                     Button(action: {
-                        withAnimation(.spring(response: 0.3)) {
-                            isLiked.toggle()
+                        Task {
+                            if take.isLiked {
+                                await viewModel.unlikeTake(takeID: take.id)
+                            } else {
+                                await viewModel.likeTake(takeID: take.id)
+                            }
                         }
                     }) {
-                        Image(systemName: isLiked ? "heart.fill" : "heart")
+                        Image(systemName: take.isLiked ? "heart.fill" : "heart")
                             .font(.system(size: 32, weight: .medium))
-                            .foregroundColor(isLiked ? .red : .white)
-                            .scaleEffect(isLiked ? 1.1 : 1.0)
+                            .foregroundColor(take.isLiked ? .red : .white)
+                            .scaleEffect(take.isLiked ? 1.1 : 1.0)
                     }
                     
-                    Text("\(take.likesCount.formatted)")
+                    Text(formatCount(take.likesCount))
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(.white)
                 }
@@ -148,7 +169,7 @@ struct TakeVideoPlayer: View {
                             .foregroundColor(.white)
                     }
                     
-                    Text("\(take.commentsCount.formatted)")
+                    Text(formatCount(take.commentsCount))
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(.white)
                 }
@@ -161,7 +182,7 @@ struct TakeVideoPlayer: View {
                             .foregroundColor(.white)
                     }
                     
-                    Text("\(take.sharesCount.formatted)")
+                    Text(formatCount(take.sharesCount))
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundColor(.white)
                 }
@@ -427,11 +448,115 @@ struct ShareOption: View {
 
 // MARK: - View Model
 class TakesViewModel: ObservableObject {
-    @Published var takes: [Take] = Take.mockTakes
+    @Published var takes: [TakeModel] = []
     @Published var isLoading = false
+    @Published var errorMessage: String?
     
-    func loadMore() {
-        // Load more takes
+    private var currentPage = 1
+    private var hasMore = true
+    private let apiClient = TakesAPIClient.shared
+    
+    init() {
+        Task {
+            await loadFeed()
+        }
+    }
+    
+    @MainActor
+    func loadFeed() async {
+        guard !isLoading else { return }
+        
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            let response = try await apiClient.getFeed(page: currentPage, limit: 10)
+            self.takes = response.takes
+            self.hasMore = response.hasMore
+            
+            // Preload next videos
+            if takes.count > 1 {
+                for i in 0..<min(3, takes.count) {
+                    if let url = URL(string: takes[i].videoUrl) {
+                        VideoCache.shared.preload(url: url)
+                    }
+                }
+            }
+        } catch {
+            self.errorMessage = error.localizedDescription
+            // Fallback to mock data if API fails
+            self.takes = convertMockTakes()
+        }
+        
+        isLoading = false
+    }
+    
+    @MainActor
+    func loadMore() async {
+        guard !isLoading, hasMore else { return }
+        
+        isLoading = true
+        currentPage += 1
+        
+        do {
+            let response = try await apiClient.getFeed(page: currentPage, limit: 10)
+            self.takes.append(contentsOf: response.takes)
+            self.hasMore = response.hasMore
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+        
+        isLoading = false
+    }
+    
+    @MainActor
+    func likeTake(takeID: String) async {
+        do {
+            let updatedTake = try await apiClient.likeTake(takeID: takeID)
+            if let index = takes.firstIndex(where: { $0.id == takeID }) {
+                takes[index] = updatedTake
+            }
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+    }
+    
+    @MainActor
+    func unlikeTake(takeID: String) async {
+        do {
+            let updatedTake = try await apiClient.unlikeTake(takeID: takeID)
+            if let index = takes.firstIndex(where: { $0.id == takeID }) {
+                takes[index] = updatedTake
+            }
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+    }
+    
+    // Convert mock data to TakeModel format (fallback)
+    private func convertMockTakes() -> [TakeModel] {
+        return Take.mockTakes.map { mockTake in
+            TakeModel(
+                id: mockTake.id,
+                userId: mockTake.userId,
+                username: mockTake.username,
+                userAvatar: mockTake.userAvatar,
+                videoUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+                thumbnailUrl: mockTake.thumbnailUrl,
+                caption: mockTake.caption,
+                audioName: mockTake.audioName,
+                audioUrl: nil,
+                duration: 30,
+                likesCount: mockTake.likesCount,
+                commentsCount: mockTake.commentsCount,
+                sharesCount: mockTake.sharesCount,
+                viewsCount: mockTake.viewsCount,
+                isLiked: false,
+                isSaved: false,
+                hashtags: [],
+                createdAt: ISO8601DateFormatter().string(from: mockTake.createdAt)
+            )
+        }
     }
 }
 

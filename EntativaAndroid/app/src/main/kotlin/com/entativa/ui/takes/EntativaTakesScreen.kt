@@ -43,8 +43,16 @@ fun EntativaTakesScreen(
         ) { page ->
             TakeVideoCard(
                 take = takes[page],
-                isCurrentlyPlaying = page == pagerState.currentPage
+                isCurrentlyPlaying = page == pagerState.currentPage,
+                viewModel = viewModel
             )
+            
+            // Load more when near end
+            LaunchedEffect(page) {
+                if (page >= takes.size - 2) {
+                    viewModel.loadMore()
+                }
+            }
         }
         
         // Top Bar
@@ -81,45 +89,21 @@ fun EntativaTakesScreen(
 
 @Composable
 fun TakeVideoCard(
-    take: Take,
-    isCurrentlyPlaying: Boolean
+    take: TakeData,
+    isCurrentlyPlaying: Boolean,
+    viewModel: EntativaTakesViewModel
 ) {
-    var isLiked by remember { mutableStateOf(false) }
     var showComments by remember { mutableStateOf(false) }
     var showShare by remember { mutableStateOf(false) }
     var isFollowing by remember { mutableStateOf(false) }
     
     Box(modifier = Modifier.fillMaxSize()) {
-        // Video Player (Placeholder)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFF007CFC).copy(alpha = 0.4f),
-                            Color(0xFF6F3EFB).copy(alpha = 0.6f),
-                            Color(0xFFFC30E1).copy(alpha = 0.4f)
-                        )
-                    )
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_play),
-                    contentDescription = "Play",
-                    tint = Color.White.copy(alpha = 0.8f),
-                    modifier = Modifier.size(80.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    "Video Player",
-                    color = Color.White.copy(alpha = 0.6f),
-                    fontSize = 16.sp
-                )
-            }
-        }
+        // Video Player (Real ExoPlayer)
+        VideoPlayer(
+            videoUrl = take.videoUrl,
+            isPlaying = isCurrentlyPlaying,
+            modifier = Modifier.fillMaxSize()
+        )
         
         // Right Side Actions
         Column(
@@ -171,13 +155,19 @@ fun TakeVideoCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 IconButton(
-                    onClick = { isLiked = !isLiked },
+                    onClick = {
+                        if (take.isLiked) {
+                            viewModel.unlikeTake(take.id)
+                        } else {
+                            viewModel.likeTake(take.id)
+                        }
+                    },
                     modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
-                        painter = painterResource(if (isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart),
+                        painter = painterResource(if (take.isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart),
                         contentDescription = "Like",
-                        tint = if (isLiked) Color.Red else Color.White,
+                        tint = if (take.isLiked) Color.Red else Color.White,
                         modifier = Modifier.size(32.dp)
                     )
                 }
