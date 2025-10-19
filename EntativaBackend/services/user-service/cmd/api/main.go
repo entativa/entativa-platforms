@@ -60,11 +60,15 @@ func main() {
 		cfg,
 	)
 	
+	// Initialize settings repository and handler
+	settingsRepo := repository.NewSettingsRepository(db)
+	settingsHandler := handler.NewSettingsHandler(settingsRepo, appLogger)
+	
 	// Initialize middleware
 	authMiddleware := middleware.NewAuthMiddleware(userRepo, appLogger)
 	
 	// Setup routes
-	router := SetupRoutes(authHandler, authMiddleware)
+	router := SetupRoutes(authHandler, settingsHandler, authMiddleware)
 	
 	// Create HTTP server
 	server := &http.Server{

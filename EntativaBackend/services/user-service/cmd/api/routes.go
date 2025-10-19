@@ -10,7 +10,7 @@ import (
 )
 
 // SetupRoutes configures all API routes
-func SetupRoutes(authHandler *handler.AuthHandler, authMiddleware *middleware.AuthMiddleware) *mux.Router {
+func SetupRoutes(authHandler *handler.AuthHandler, settingsHandler *handler.SettingsHandler, authMiddleware *middleware.AuthMiddleware) *mux.Router {
 	r := mux.NewRouter()
 	
 	// API version prefix
@@ -45,6 +45,22 @@ func SetupRoutes(authHandler *handler.AuthHandler, authMiddleware *middleware.Au
 	users.HandleFunc("/{id}", authHandler.HandleGetUser).Methods("GET")
 	users.HandleFunc("/{id}", authHandler.HandleUpdateUser).Methods("PUT")
 	users.HandleFunc("/{id}", authHandler.HandleDeleteUser).Methods("DELETE")
+	
+	// Settings routes (protected)
+	settings := api.PathPrefix("/settings").Subrouter()
+	settings.Use(authMiddleware.RequireAuth)
+	settings.HandleFunc("", settingsHandler.GetUserSettings).Methods("GET")
+	settings.HandleFunc("/account", settingsHandler.UpdateAccountSettings).Methods("PUT")
+	settings.HandleFunc("/privacy", settingsHandler.UpdatePrivacySettings).Methods("PUT")
+	settings.HandleFunc("/notifications", settingsHandler.UpdateNotificationSettings).Methods("PUT")
+	settings.HandleFunc("/data", settingsHandler.UpdateDataSettings).Methods("PUT")
+	settings.HandleFunc("/password", settingsHandler.ChangePassword).Methods("PUT")
+	settings.HandleFunc("/blocked", settingsHandler.GetBlockedUsers).Methods("GET")
+	settings.HandleFunc("/block/{userID}", settingsHandler.BlockUser).Methods("POST")
+	settings.HandleFunc("/unblock/{userID}", settingsHandler.UnblockUser).Methods("DELETE")
+	settings.HandleFunc("/cache", settingsHandler.ClearCache).Methods("DELETE")
+	settings.HandleFunc("/login-activity", settingsHandler.GetLoginActivity).Methods("GET")
+	settings.HandleFunc("/delete-account", settingsHandler.DeleteAccount).Methods("POST")
 	
 	// CORS middleware
 	r.Use(corsMiddleware)
