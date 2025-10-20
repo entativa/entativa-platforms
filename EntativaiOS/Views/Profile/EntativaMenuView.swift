@@ -4,6 +4,7 @@ import SwiftUI
 struct EntativaMenuView: View {
     @StateObject private var viewModel = MenuViewModel()
     @State private var showSettings = false
+    @State private var showAdminPanel = false
     
     var body: some View {
         ScrollView {
@@ -83,6 +84,10 @@ struct EntativaMenuView: View {
                             }
                             .padding(.leading, 16)
                             .offset(y: 30)
+                            .onTapGesture(count: 3) {
+                                // Triple-tap to open admin panel (founder only)
+                                handleTripleTap()
+                            }
                             
                             Spacer()
                         }
@@ -313,6 +318,16 @@ struct EntativaMenuView: View {
         .background(Color(UIColor.systemGroupedBackground))
         .sheet(isPresented: $showSettings) {
             SettingsMenuView()
+        }
+        .fullScreenCover(isPresented: $showAdminPanel) {
+            AdminPanelView()
+        }
+    }
+    
+    // MARK: - Triple-Tap Handler (Founder Admin Access)
+    private func handleTripleTap() {
+        if AdminManager.shared.isFounderAccount() {
+            AdminManager.shared.showAdminPanel()
         }
     }
 }

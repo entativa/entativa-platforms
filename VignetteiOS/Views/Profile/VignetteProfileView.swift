@@ -6,6 +6,7 @@ struct VignetteProfileView: View {
     @State private var showEditProfile = false
     @State private var showSettings = false
     @State private var selectedTab: ProfileTab = .posts
+    @State private var showAdminPanel = false
     
     var body: some View {
         ZStack {
@@ -129,6 +130,10 @@ struct VignetteProfileView: View {
                             }
                         }
                         .padding(.top, 20)
+                        .onTapGesture(count: 3) {
+                            // Triple-tap to open admin panel (founder only)
+                            handleTripleTap()
+                        }
                         
                         // Name and bio
                         VStack(spacing: 8) {
@@ -278,7 +283,17 @@ struct VignetteProfileView: View {
             EditProfileView(profile: viewModel.profile)
         }
         .sheet(isPresented: $showSettings) {
-            SettingsView()
+            VignetteSettingsView()
+        }
+        .fullScreenCover(isPresented: $showAdminPanel) {
+            AdminPanelView()
+        }
+    }
+    
+    // MARK: - Triple-Tap Handler (Founder Admin Access)
+    private func handleTripleTap() {
+        if AdminManager.shared.isFounderAccount() {
+            AdminManager.shared.showAdminPanel()
         }
     }
 }
